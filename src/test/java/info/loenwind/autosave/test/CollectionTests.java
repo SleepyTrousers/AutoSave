@@ -6,7 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +39,7 @@ public class CollectionTests {
 
   @BeforeAll
   public static void setup() {
-    Log.enableExtremelyDetailedNBTActivity("AutoStoreTests", true);
+//    Log.enableExtremelyDetailedNBTActivity("AutoStoreTests", true);
     Bootstrap.register();
 
     before.fill();
@@ -51,11 +51,11 @@ public class CollectionTests {
 
   @Test
   public void testStringList() {
-    Assert.assertEquals(before.strings, after.strings);
+    Assertions.assertEquals(before.strings, after.strings);
   }
 
   @Test
   public void testMap() {
-    Assert.assertEquals(before.intMap, after.intMap);
+    Assertions.assertEquals(before.intMap, after.intMap);
   }
 }

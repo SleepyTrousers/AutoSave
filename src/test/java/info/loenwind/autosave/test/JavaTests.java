@@ -2,7 +2,7 @@ package info.loenwind.autosave.test;
 
 import javax.annotation.Nonnull;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +40,7 @@ public class JavaTests {
 
   @BeforeAll
   public static void setup() {
-    Log.enableExtremelyDetailedNBTActivity("AutoStoreTests", true);
+//    Log.enableExtremelyDetailedNBTActivity("AutoStoreTests", true);
     Bootstrap.register();
 
     before.fill();
@@ -52,35 +52,35 @@ public class JavaTests {
 
   @Test
   public void testBoolean() {
-    Assert.assertEquals(before.bool, after.bool);
+    Assertions.assertEquals(before.bool, after.bool);
   }
 
   @Test
   public void testFloat() {
-    Assert.assertEquals(before.floaty, after.floaty, 0.01F);
+    Assertions.assertEquals(before.floaty, after.floaty, 0.01F);
   }
 
   @Test
   public void testFloatArray() {
-    Assert.assertNotNull(after.floaties);
-    Assert.assertArrayEquals(before.floaties, after.floaties, 0.01F);
+    Assertions.assertNotNull(after.floaties);
+    Assertions.assertArrayEquals(before.floaties, after.floaties, 0.01F);
   }
 
   @Test
   public void testInteger() {
-    Assert.assertEquals(before.integer, after.integer);
+    Assertions.assertEquals(before.integer, after.integer);
   }
 
   @Test
   public void testString() {
-    Assert.assertNotNull(after.string);
-    Assert.assertEquals(before.string, after.string);
+    Assertions.assertNotNull(after.string);
+    Assertions.assertEquals(before.string, after.string);
   }
 
   @Test
   public void testEnum() {
-    Assert.assertNotNull(after.facing);
-    Assert.assertEquals(before.facing, after.facing);
+    Assertions.assertNotNull(after.facing);
+    Assertions.assertEquals(before.facing, after.facing);
   }
 
 }

@@ -5,7 +5,9 @@ buildscript {
         maven { url = "http://files.minecraftforge.net/maven" }
         maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
-    dependencies { classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT' }
+    dependencies { 
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT' 
+    }
 }
 
 plugins {
@@ -35,13 +37,18 @@ boolean dev = System.getenv("RELEASE") == null || System.getenv("RELEASE").equal
 def type = 'alpha'
 if (project.hasProperty('mod_appendix')) {
     version += "-${project.mod_appendix}"
-	type = project.mod_appendix
+    type = project.mod_appendix
 }
 
 minecraft {
     mappings = "snapshot_20180612"
     version = "${minecraft_version}-${forge_version}"
     runDir = 'run'
+}
+
+dependencies {
+    testImplementation     "org.junit.jupiter:junit-jupiter-api:5.2.0"
+    testRuntime         "org.junit.jupiter:junit-jupiter-engine:5.2.0"
 }
 
 configurations {
@@ -65,6 +72,22 @@ processResources {
     }
 }
 
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "PASSED", "FAILED", "SKIPPED"
+		afterSuite { desc, result ->
+			if (!desc.parent) {
+				println "\nTest result: ${result.resultType}"
+				println "Test summary: ${result.testCount} tests, " +
+                    "${result.successfulTestCount} succeeded, " +
+                    "${result.failedTestCount} failed, " +
+                    "${result.skippedTestCount} skipped"
+			}
+		}
+    }
+}
+
 if (JavaVersion.current().isJava8Compatible()) {
     allprojects {
         tasks.withType(Javadoc) {
@@ -81,7 +104,7 @@ publishing {
         mavenJava(MavenPublication) {
             from components.java
 
-			artifact sourceJar
+            artifact sourceJar
         }
     }
 
