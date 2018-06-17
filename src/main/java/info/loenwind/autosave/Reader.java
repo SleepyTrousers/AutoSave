@@ -3,7 +3,6 @@ package info.loenwind.autosave;
 import java.util.EnumSet;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import info.loenwind.autosave.annotations.Storable;
@@ -41,7 +40,7 @@ public class Reader {
    * @param object
    *          The object that should be restored
    */
-  public static <T> void read(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound tag, @Nonnull T object) {
+  public static <T> void read(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, T object) {
     try {
       StorableEngine.read(registry, phase, tag, object);
     } catch (IllegalAccessException e) {
@@ -71,7 +70,7 @@ public class Reader {
    * @param object
    *          The object that should be restored
    */
-  public static <T> void read(@Nullable Set<NBTAction> phase, @Nullable NBTTagCompound tag, @Nonnull T object) {
+  public static <T> void read(@Nullable Set<NBTAction> phase, @Nullable NBTTagCompound tag, T object) {
     read(Registry.GLOBAL_REGISTRY, NullHelper.notnull(phase, "Missing phase"), NullHelper.notnull(tag, "Missing NBT"), object);
   }
 
@@ -95,7 +94,7 @@ public class Reader {
    * @param object
    *          The object that should be restored
    */
-  public static <T> void read(@Nonnull Registry registry, @Nonnull NBTAction phase, @Nullable NBTTagCompound tag, @Nonnull T object) {
+  public static <T> void read(Registry registry, NBTAction phase, @Nullable NBTTagCompound tag, T object) {
     read(registry, NullHelper.notnullJ(EnumSet.of(phase), "EnumSet.of()"), NullHelper.notnull(tag, "Missing NBT"), object);
   }
 
@@ -117,7 +116,7 @@ public class Reader {
    * @param object
    *          The object that should be restored
    */
-  public static <T> void read(@Nonnull NBTAction phase, @Nullable NBTTagCompound tag, @Nonnull T object) {
+  public static <T> void read(NBTAction phase, @Nullable NBTTagCompound tag, T object) {
     read(Registry.GLOBAL_REGISTRY, NullHelper.notnullJ(EnumSet.of(phase), "EnumSet.of()"), NullHelper.notnull(tag, "Missing NBT"), object);
   }
 
@@ -138,7 +137,7 @@ public class Reader {
    * @param object
    *          The object that should be restored
    */
-  public static <T> void read(@Nonnull Registry registry, @Nullable NBTTagCompound tag, @Nonnull T object) {
+  public static <T> void read(Registry registry, @Nullable NBTTagCompound tag, T object) {
     read(registry, NullHelper.notnullJ(EnumSet.allOf(NBTAction.class), "EnumSet.allOf()"), NullHelper.notnull(tag, "Missing NBT"), object);
   }
 
@@ -157,7 +156,7 @@ public class Reader {
    * @param object
    *          The object that should be restored
    */
-  public static <T> void read(@Nullable NBTTagCompound tag, @Nonnull T object) {
+  public static <T> void read(@Nullable NBTTagCompound tag, T object) {
     read(Registry.GLOBAL_REGISTRY, NullHelper.notnullJ(EnumSet.allOf(NBTAction.class), "EnumSet.allOf()"), NullHelper.notnull(tag, "Missing NBT"), object);
   }
 
@@ -174,7 +173,7 @@ public class Reader {
    *          The object that should be restored. May be null if the class's handler supports creating new objects.
    * @return The restored object (which may be null), or the parameter object if nothing was to be restored.
    */
-  public static <T> T readField(@Nullable NBTTagCompound tag, @Nullable Class<T> fieldClass, @Nullable String fieldName, @Nullable T object) {
+  public static @Nullable <T> T readField(@Nullable NBTTagCompound tag, @Nullable Class<T> fieldClass, @Nullable String fieldName, @Nullable T object) {
     try {
       return StorableEngine.getSingleField(Registry.GLOBAL_REGISTRY, NullHelper.notnullJ(EnumSet.allOf(NBTAction.class), "EnumSet.allOf()"),
           NullHelper.notnull(tag, "Missing NBT"), NullHelper.notnull(fieldName, "Missing field name"), NullHelper.notnull(fieldClass, "Missing field class"),

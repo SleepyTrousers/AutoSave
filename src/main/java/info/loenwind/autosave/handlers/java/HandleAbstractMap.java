@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import info.loenwind.autosave.Registry;
@@ -25,12 +24,12 @@ public abstract class HandleAbstractMap<T extends Map> extends HandleGenericType
   }
 
   @Override
-  public @Nonnull Class<?> getRootType() {
+  public Class<?> getRootType() {
     return Map.class;
   }
 
   @Override
-  public boolean store(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nonnull String name, @Nonnull T object)
+  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, T object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     NBTTagList tag = new NBTTagList();
     for (Entry e : (Set<Entry>) object.entrySet()) {
@@ -54,7 +53,7 @@ public abstract class HandleAbstractMap<T extends Map> extends HandleGenericType
   }
 
   @Override
-  public T read(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nullable Field field, @Nonnull String name,
+  public @Nullable T read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name,
       @Nullable T object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     if (nbt.hasKey(name)) {
       if (object == null) {
@@ -74,6 +73,6 @@ public abstract class HandleAbstractMap<T extends Map> extends HandleGenericType
     return object;
   }
 
-  abstract protected @Nonnull T createMap();
+  abstract protected T createMap();
 
 }

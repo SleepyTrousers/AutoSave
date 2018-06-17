@@ -4,8 +4,6 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.TypeUtil;
@@ -22,7 +20,7 @@ public class HandleHashMap extends HandleAbstractMap<HashMap> {
   }
 
   @Override
-  protected @Nonnull HashMap createMap() {
+  protected HashMap createMap() {
     return new HashMap();
   }
 
@@ -37,7 +35,7 @@ public class HandleHashMap extends HandleAbstractMap<HashMap> {
   }
   
   @Override
-  public @Nonnull Class<?> getRootType() {
+  public Class<?> getRootType() {
     return HashMap.class;
   }
 }

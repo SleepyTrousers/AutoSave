@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.EnumMap;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import info.loenwind.autosave.Registry;
@@ -23,7 +22,7 @@ public class HandleAbstractEnumMap<K extends Enum<K>, V> implements IHandler<Enu
   
   protected HandleAbstractEnumMap(Class<K> enumClass, IHandler<V> valueHandler) {
     this.enumClass = enumClass;
-    this.enumValues = enumClass.getEnumConstants();
+    this.enumValues = NullHelper.notnullJ(enumClass.getEnumConstants(), "Class#getEnumConstants");
     this.valueHandler = valueHandler;
   }
 
@@ -34,8 +33,8 @@ public class HandleAbstractEnumMap<K extends Enum<K>, V> implements IHandler<Enu
   }
 
   @Override
-  public boolean store(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nonnull String name,
-      @Nonnull EnumMap<K, V> object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
+  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name,
+      EnumMap<K, V> object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     NBTTagCompound tag = new NBTTagCompound();
     for (K key : enumValues) {
       V val = object.get(key);
@@ -51,8 +50,8 @@ public class HandleAbstractEnumMap<K extends Enum<K>, V> implements IHandler<Enu
   }
 
   @Override
-  public EnumMap<K, V> read(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nullable Field field,
-      @Nonnull String name, @Nullable EnumMap<K, V> object)
+  public @Nullable EnumMap<K, V> read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field,
+      String name, @Nullable EnumMap<K, V> object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     if (nbt.hasKey(name)) {
       if (object == null) {
@@ -69,7 +68,7 @@ public class HandleAbstractEnumMap<K extends Enum<K>, V> implements IHandler<Enu
     return object;
   }
   
-  @Nonnull
+  
   protected EnumMap<K, V> makeMap() {
     return new EnumMap<>(enumClass);
   }

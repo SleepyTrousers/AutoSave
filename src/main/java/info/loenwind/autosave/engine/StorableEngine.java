@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import info.loenwind.autosave.Reader;
@@ -25,6 +24,7 @@ import info.loenwind.autosave.handlers.internal.HandleStorable;
 import info.loenwind.autosave.handlers.internal.NullHandler;
 import info.loenwind.autosave.util.Log;
 import info.loenwind.autosave.util.NBTAction;
+import info.loenwind.autosave.util.NullHelper;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
@@ -51,29 +51,29 @@ public class StorableEngine {
     }
   };
 
-  public static final @Nonnull String NULL_POSTFIX = "-";
-  public static final @Nonnull String EMPTY_POSTFIX = "+";
-  public static final @Nonnull String SUPERCLASS_KEY = "__superclass";
-  private final @Nonnull Map<Class<?>, List<Field>> fieldCache = new HashMap<Class<?>, List<Field>>();
-  private final @Nonnull Map<Field, Set<NBTAction>> phaseCache = new HashMap<Field, Set<NBTAction>>();
-  private final @Nonnull Map<Field, List<IHandler>> fieldHandlerCache = new HashMap<Field, List<IHandler>>();
-  private final @Nonnull Map<Class<?>, Class<?>> superclassCache = new HashMap<Class<?>, Class<?>>();
-  private final @Nonnull Map<Class<?>, List<IHandler>> superclassHandlerCache = new HashMap<Class<?>, List<IHandler>>();
+  public static final String NULL_POSTFIX = "-";
+  public static final String EMPTY_POSTFIX = "+";
+  public static final String SUPERCLASS_KEY = "__superclass";
+  private final Map<Class<?>, List<Field>> fieldCache = new HashMap<Class<?>, List<Field>>();
+  private final Map<Field, Set<NBTAction>> phaseCache = new HashMap<Field, Set<NBTAction>>();
+  private final Map<Field, List<IHandler>> fieldHandlerCache = new HashMap<Field, List<IHandler>>();
+  private final Map<Class<?>, Class<?>> superclassCache = new HashMap<Class<?>, Class<?>>();
+  private final Map<Class<?>, List<IHandler>> superclassHandlerCache = new HashMap<Class<?>, List<IHandler>>();
 
   private StorableEngine() {
   }
 
-  public static <T> void read(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound tag, @Nonnull T object)
+  public static <T> void read(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, T object)
       throws IllegalAccessException, InstantiationException, NoHandlerFoundException {
     INSTANCE.get().read_impl(registry, phase, tag, object);
   }
 
-  public static <T> void store(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound tag, @Nonnull T object)
+  public static <T> void store(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, T object)
       throws IllegalAccessException, InstantiationException, NoHandlerFoundException {
     INSTANCE.get().store_impl(registry, phase, tag, object);
   }
 
-  public <T> void read_impl(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound tag, @Nonnull T object)
+  public <T> void read_impl(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, T object)
       throws IllegalAccessException, InstantiationException, NoHandlerFoundException {
     Class<? extends Object> clazz = object.getClass();
     if (!fieldCache.containsKey(clazz)) {
@@ -118,7 +118,7 @@ public class StorableEngine {
     Log.livetraceNBT("Read NBT data for object ", object, " of class ", clazz);
   }
 
-  public <T> void store_impl(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound tag, @Nonnull T object)
+  public <T> void store_impl(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, T object)
       throws IllegalAccessException, InstantiationException, NoHandlerFoundException {
     Class<? extends Object> clazz = object.getClass();
     if (!fieldCache.containsKey(clazz)) {
@@ -161,8 +161,8 @@ public class StorableEngine {
     Log.livetraceNBT("Saved NBT data for object ", object, " of class ", clazz);
   }
 
-  public static <T> T getSingleField(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound tag, @Nonnull String fieldName,
-      @Nonnull Class<T> clazz, @Nullable T object) throws InstantiationException, IllegalAccessException, IllegalArgumentException, NoHandlerFoundException {
+  public static @Nullable <T> T getSingleField(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, String fieldName,
+      Class<T> clazz, @Nullable T object) throws InstantiationException, IllegalAccessException, IllegalArgumentException, NoHandlerFoundException {
     if (!tag.hasKey(fieldName + NULL_POSTFIX)) {
       for (IHandler<T> handler : registry.findHandlers(clazz)) {
         T result = handler.read(registry, phase, tag, null, fieldName, object);
@@ -174,8 +174,8 @@ public class StorableEngine {
     return null;
   }
 
-  public static <T> void setSingleField(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound tag, @Nonnull String fieldName,
-      @Nonnull Class<T> clazz, @Nullable T fieldData) throws InstantiationException, IllegalAccessException, IllegalArgumentException, NoHandlerFoundException {
+  public static <T> void setSingleField(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, String fieldName,
+      Class<T> clazz, @Nullable T fieldData) throws InstantiationException, IllegalAccessException, IllegalArgumentException, NoHandlerFoundException {
     if (fieldData != null) {
       tag.removeTag(fieldName + NULL_POSTFIX);
       for (IHandler<T> handler : registry.findHandlers(clazz)) {
@@ -191,7 +191,7 @@ public class StorableEngine {
     }
   }
 
-  private void cacheHandlers(@Nonnull Registry registry, Class<?> clazz) throws IllegalAccessException, InstantiationException, NoHandlerFoundException {
+  private void cacheHandlers(Registry registry, Class<?> clazz) throws IllegalAccessException, InstantiationException, NoHandlerFoundException {
     final ArrayList<Field> fieldList = new ArrayList<Field>();
     for (Field field : clazz.getDeclaredFields()) {
       Store annotation = field.getAnnotation(Store.class);
@@ -199,7 +199,7 @@ public class StorableEngine {
         ArrayList<IHandler> handlerList = new ArrayList<IHandler>();
         String fieldName = field.getName();
         if (fieldName != null) {
-          Type fieldType = field.getGenericType();
+          Type fieldType = NullHelper.notnullJ(field.getGenericType(), "Field#getGenericType");
           if (annotation.handler() != NullHandler.class) {
             handlerList.add(annotation.handler().newInstance());
           }

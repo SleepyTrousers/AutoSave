@@ -4,8 +4,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.TypeUtil;
@@ -22,7 +20,7 @@ public class HandleArrayList extends HandleAbstractCollection<ArrayList> {
   }
 
   @Override
-  protected @Nonnull ArrayList makeCollection() {
+  protected ArrayList makeCollection() {
     return new ArrayList();
   }
   

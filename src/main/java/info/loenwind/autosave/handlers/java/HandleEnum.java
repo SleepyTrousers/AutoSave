@@ -3,7 +3,6 @@ package info.loenwind.autosave.handlers.java;
 import java.lang.reflect.Field;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import info.loenwind.autosave.Registry;
@@ -23,14 +22,14 @@ public class HandleEnum implements IHandler<Enum<?>> {
   }
 
   @Override
-  public boolean store(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nonnull String name,
-      @Nonnull Enum<?> object) throws IllegalArgumentException, IllegalAccessException {
+  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name,
+      Enum<?> object) throws IllegalArgumentException, IllegalAccessException {
     nbt.setInteger(name, object.ordinal());
     return true;
   }
 
   @Override
-  public Enum<?> read(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nullable Field field, @Nonnull String name,
+  public @Nullable Enum<?> read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name,
       @Nullable Enum<?> object) {
     if (nbt.hasKey(name)) {
       Enum<?>[] enumConstants = null;

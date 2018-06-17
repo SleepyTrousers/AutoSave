@@ -1,0 +1,4 @@
+@ParametersAreNonnullByDefault
+package info.loenwind.autosave.exceptions;
+
+import javax.annotation.ParametersAreNonnullByDefault;

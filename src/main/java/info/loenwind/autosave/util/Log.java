@@ -11,7 +11,7 @@ public final class Log {
 
   public static final boolean inDev = System.getProperty("INDEV") != null;
 
-  public static final Logger LOGGER = LogManager.getLogger("AutoSave");
+  public static final Logger LOGGER = NullHelper.notnull(LogManager.getLogger("AutoSave"), "LogManager.getLogger");
 
   public static void warn(Object... msg) {
     LOGGER.warn(join("", msg));
@@ -57,7 +57,7 @@ public final class Log {
       }
       joiner.append(cs);
     }
-    return joiner.toString();
+    return NullHelper.notnullJ(joiner.toString(), "StringBuilder#toString");
   }
 
   private Log() {

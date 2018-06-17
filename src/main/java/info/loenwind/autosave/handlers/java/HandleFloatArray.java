@@ -3,7 +3,6 @@ package info.loenwind.autosave.handlers.java;
 import java.lang.reflect.Field;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import info.loenwind.autosave.Registry;
@@ -22,8 +21,8 @@ public class HandleFloatArray implements IHandler<float[]> {
   }
 
   @Override
-  public boolean store(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nonnull String name,
-      @Nonnull float[] object) throws IllegalArgumentException, IllegalAccessException {
+  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name,
+      float[] object) throws IllegalArgumentException, IllegalAccessException {
     int len = 0;
     for (int i = object.length; i > 0; i--) {
       if (object[i - 1] != 0) {
@@ -40,7 +39,7 @@ public class HandleFloatArray implements IHandler<float[]> {
   }
 
   @Override
-  public float[] read(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nullable Field field, @Nonnull String name,
+  public @Nullable float[] read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name,
       @Nullable float[] object) {
     if (nbt.hasKey(name) && object != null) {
       int[] tmp = nbt.getIntArray(name);

@@ -5,7 +5,6 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import info.loenwind.autosave.Registry;
@@ -31,7 +30,7 @@ public abstract class HandleAbstractCollection<T extends Collection> extends Han
   }
 
   @Override
-  public boolean store(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nonnull String name, @Nonnull T object)
+  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, T object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     NBTTagCompound tag = new NBTTagCompound();
     tag.setInteger("size", object.size());
@@ -49,7 +48,7 @@ public abstract class HandleAbstractCollection<T extends Collection> extends Han
   }
 
   @Override
-  public T read(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nullable Field field, @Nonnull String name,
+  public @Nullable T read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name,
       @Nullable T object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     if (nbt.hasKey(name)) {
       if (object == null) {
@@ -73,5 +72,5 @@ public abstract class HandleAbstractCollection<T extends Collection> extends Han
     return object;
   }
 
-  abstract protected @Nonnull T makeCollection();
+  abstract protected T makeCollection();
 }

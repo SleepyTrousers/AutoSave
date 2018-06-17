@@ -3,6 +3,8 @@ package info.loenwind.autosave.exceptions;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
+import javax.annotation.Nullable;
+
 public class NoHandlerFoundException extends Exception {
 
   private static final long serialVersionUID = -6324172401194016237L;
@@ -15,7 +17,7 @@ public class NoHandlerFoundException extends Exception {
     this(type, name, null);
   }
 
-  public NoHandlerFoundException(Type type, String name, Exception e) {
+  public NoHandlerFoundException(Type type, String name, @Nullable Exception e) {
     super("No storage handler found for field " + name + " of type " + type, e);
   }
 }

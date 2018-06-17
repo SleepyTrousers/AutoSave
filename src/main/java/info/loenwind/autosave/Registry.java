@@ -4,7 +4,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import info.loenwind.autosave.annotations.Storable;
@@ -43,7 +42,7 @@ public class Registry {
    * <p>
    * You can register new handlers here if you want other mods to be able to store your objects. Otherwise please use your own registry.
    */
-  @Nonnull
+  
   public static final Registry GLOBAL_REGISTRY = new Registry(true);
 
   static {
@@ -76,7 +75,7 @@ public class Registry {
     GLOBAL_REGISTRY.register(new HandleStorable<Object>());
   }
 
-  @Nonnull
+  
   private final List<IHandler> handlers = new ArrayList<IHandler>();
   @Nullable
   private final Registry parent;
@@ -104,7 +103,7 @@ public class Registry {
    * @param parent
    *          The parent to extend
    */
-  public Registry(@Nonnull Registry parent) {
+  public Registry(Registry parent) {
     this.parent = parent;
   }
 
@@ -114,7 +113,7 @@ public class Registry {
    * @param handler
    *          The {@link IHandler} to register
    */
-  public void register(@Nonnull IHandler handler) {
+  public void register(IHandler handler) {
     handlers.add(handler);
   }
 
@@ -124,7 +123,7 @@ public class Registry {
    * @param handler
    *          The {@link IHandler} to register
    */
-  public void registerPriority(@Nonnull IHandler handler) {
+  public void registerPriority(IHandler handler) {
     handlers.add(0, handler);
   }
 
@@ -154,7 +153,7 @@ public class Registry {
    * @throws InstantiationException
    * @throws IllegalAccessException
    */
-  @Nonnull
+  
   public List<IHandler> findHandlers(Type type) throws InstantiationException, IllegalAccessException {
     List<IHandler> result = new ArrayList<IHandler>();
 

@@ -14,7 +14,7 @@ public class TypeUtil {
    * @return The raw Class object.
    */
   public static Class<?> toClass(Type type) {
-    return (Class<?>) (type instanceof ParameterizedType ? ((ParameterizedType) type).getRawType() : type);
+    return (Class<?>) (type instanceof ParameterizedType ? NullHelper.notnullJ(((ParameterizedType) type).getRawType(), "ParameterizedType#getRawType") : type);
   }
 
   /**

@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import info.loenwind.autosave.Registry;
@@ -37,7 +36,7 @@ public interface IHandler<T> {
    *          A type that wants to be handled
    * @return An {@link IHandler} to handle the given type, if possible. <code>null</code otherwise.
    */
-  default IHandler<? extends T> getHandler(@Nonnull Type type) {
+  default @Nullable IHandler<? extends T> getHandler(Type type) {
     return TypeUtil.isAssignable(getRootType(), type) ? this : null;
   }
   
@@ -47,7 +46,7 @@ public interface IHandler<T> {
    * 
    * @return The {@link #getClass()} this handler can handle.
    */
-  default @Nonnull Class<?> getRootType() {
+  default Class<?> getRootType() {
     // Should be equivalent to null without being null. Nothing can extend, nor would use Void.
     return Void.class;
   }
@@ -76,7 +75,7 @@ public interface IHandler<T> {
    * @throws InstantiationException
    * @throws NoHandlerFoundException
    */
-  boolean store(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nonnull String name, @Nonnull T object)
+  boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, T object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException;
 
   /**
@@ -115,6 +114,7 @@ public interface IHandler<T> {
    * @throws InstantiationException
    * @throws NoHandlerFoundException
    */
-  T read(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nullable Field field, @Nonnull String name,
-      @Nullable T object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException;
+  @Nullable
+  T read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name, @Nullable T object)
+      throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException;
 }

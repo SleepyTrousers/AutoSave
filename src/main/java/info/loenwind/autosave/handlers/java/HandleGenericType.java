@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
@@ -18,7 +17,6 @@ import info.loenwind.autosave.util.TypeUtil;
 import net.minecraft.nbt.NBTTagCompound;
 
 @SuppressWarnings("rawtypes")
-@ParametersAreNonnullByDefault
 public abstract class HandleGenericType<T> implements IHandler<T> {
   
   @SuppressWarnings("unchecked")
@@ -33,6 +31,9 @@ public abstract class HandleGenericType<T> implements IHandler<T> {
     }
     for (int i = 0; i < getRequiredParameters(); i++) {
       Type type = parameterTypes[i];
+      if (type == null) {
+        throw new IllegalArgumentException("Null type passed to HandleGenericType()");
+      }
       try {
         List<IHandler> handlers = Registry.GLOBAL_REGISTRY.findHandlers(type);
         if (handlers.isEmpty()) {
@@ -85,7 +86,7 @@ public abstract class HandleGenericType<T> implements IHandler<T> {
   }
 
   @SuppressWarnings({ "unchecked"})
-  protected final @Nullable <V> V readRecursive(int param, Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Field field, String name, V object) 
+  protected final @Nullable <V> V readRecursive(int param, Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name, @Nullable V object) 
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     for (IHandler handler : subHandlers[param]) {
       V result = (V) handler.read(registry, phase, nbt, field, name, object);

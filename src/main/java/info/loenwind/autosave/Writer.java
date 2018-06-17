@@ -3,7 +3,6 @@ package info.loenwind.autosave;
 import java.util.EnumSet;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import info.loenwind.autosave.annotations.Storable;
@@ -41,7 +40,7 @@ public class Writer {
    * @param object
    *          The object that should be stored
    */
-  public static <T> void write(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound tag, @Nonnull T object) {
+  public static <T> void write(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, T object) {
     try {
       StorableEngine.store(registry, phase, tag, object);
     } catch (IllegalAccessException e) {
@@ -71,7 +70,7 @@ public class Writer {
    * @param object
    *          The object that should be stored
    */
-  public static <T> void write(@Nullable Set<NBTAction> phase, @Nullable NBTTagCompound tag, @Nonnull T object) {
+  public static <T> void write(@Nullable Set<NBTAction> phase, @Nullable NBTTagCompound tag, T object) {
     write(Registry.GLOBAL_REGISTRY, NullHelper.notnull(phase, "Missing phase"), NullHelper.notnull(tag, "Missing NBT"), object);
   }
 
@@ -95,7 +94,7 @@ public class Writer {
    * @param object
    *          The object that should be stored
    */
-  public static <T> void write(@Nonnull Registry registry, @Nonnull NBTAction phase, @Nullable NBTTagCompound tag, @Nonnull T object) {
+  public static <T> void write(Registry registry, NBTAction phase, @Nullable NBTTagCompound tag, T object) {
     write(registry, NullHelper.notnullJ(EnumSet.of(phase), "EnumSet.of()"), NullHelper.notnull(tag, "Missing NBT"), object);
   }
 
@@ -117,7 +116,7 @@ public class Writer {
    * @param object
    *          The object that should be stored
    */
-  public static <T> void write(@Nonnull NBTAction phase, @Nullable NBTTagCompound tag, @Nonnull T object) {
+  public static <T> void write(NBTAction phase, @Nullable NBTTagCompound tag, T object) {
     write(Registry.GLOBAL_REGISTRY, NullHelper.notnullJ(EnumSet.of(phase), "EnumSet.of()"), NullHelper.notnull(tag, "Missing NBT"), object);
   }
 
@@ -138,7 +137,7 @@ public class Writer {
    * @param object
    *          The object that should be stored
    */
-  public static <T> void write(@Nonnull Registry registry, @Nullable NBTTagCompound tag, @Nonnull T object) {
+  public static <T> void write(Registry registry, @Nullable NBTTagCompound tag, T object) {
     write(registry, NullHelper.notnullJ(EnumSet.allOf(NBTAction.class), "EnumSet.allOf()"), NullHelper.notnull(tag, "Missing NBT"), object);
   }
 
@@ -157,7 +156,7 @@ public class Writer {
    * @param object
    *          The object that should be stored
    */
-  public static <T> void write(@Nullable NBTTagCompound tag, @Nonnull T object) {
+  public static <T> void write(@Nullable NBTTagCompound tag, T object) {
     write(Registry.GLOBAL_REGISTRY, NullHelper.notnullJ(EnumSet.allOf(NBTAction.class), "EnumSet.allOf()"), NullHelper.notnull(tag, "Missing NBT"), object);
   }
 

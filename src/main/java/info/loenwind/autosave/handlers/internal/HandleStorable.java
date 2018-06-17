@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import info.loenwind.autosave.Registry;
@@ -41,14 +40,14 @@ public class HandleStorable<T extends Object> implements IHandler<T> {
   }
 
   @Override
-  public IHandler<T> getHandler(Type type) {
+  public @Nullable IHandler<T> getHandler(Type type) {
     Class<?> clazz = TypeUtil.toClass(type);
     Storable annotation = clazz.getAnnotation(Storable.class);
     return annotation != null && annotation.handler() == this.getClass() ? this : null;
   }
 
   @Override
-  public boolean store(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nonnull String name, @Nonnull T object)
+  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, T object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     NBTTagCompound tag = new NBTTagCompound();
     StorableEngine.store(registry, phase, tag, object);
@@ -57,7 +56,7 @@ public class HandleStorable<T extends Object> implements IHandler<T> {
   }
 
   @Override
-  public T read(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nullable Field field, @Nonnull String name,
+  public @Nullable T read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name,
       @Nullable T object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     if (nbt.hasKey(name) && object != null) {
