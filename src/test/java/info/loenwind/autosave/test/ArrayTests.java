@@ -1,43 +1,36 @@
 package info.loenwind.autosave.test;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.annotation.Nonnull;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.google.common.collect.Lists;
-
 import info.loenwind.autosave.Reader;
 import info.loenwind.autosave.Writer;
 import info.loenwind.autosave.annotations.Store;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class CollectionTests {
+public class ArrayTests {
 
   private static class Holder {
 
-    public @Store List<String> strings;
-    public @Store Map<String, Integer> intMap;
+    public @Store int[]    ints;
+    public @Store float[]  floats;
+    public @Store String[] strings;
 
     void fill() {
-      strings = Lists.newArrayList("foo", "bar");
-      intMap = new HashMap<>();
-      intMap.put("foo", 123);
-      intMap.put("bar", 456);
+      ints = new int[] { 1, 2, 3, 4 };
+      floats = new float[] { 1, 0.5f, 0.25f, 0.125f };
+      strings = new String[] { "Recursive", "handlers", "are", "cool" };
     }
-
   }
 
   private static @Nonnull Holder before = new Holder(), after = new Holder();
 
   @BeforeAll
   public static void setup() {
-//    Log.enableExtremelyDetailedNBTActivity("AutoStoreTests", true);
+    // Log.enableExtremelyDetailedNBTActivity("AutoStoreTests", true);
 
     before.fill();
 
@@ -47,12 +40,17 @@ public class CollectionTests {
   }
 
   @Test
-  public void testStringList() {
-    Assertions.assertEquals(before.strings, after.strings);
+  public void testIntArray() {
+    Assertions.assertArrayEquals(before.ints, after.ints);
   }
 
   @Test
-  public void testMap() {
-    Assertions.assertEquals(before.intMap, after.intMap);
+  public void testFloatArray() {
+    Assertions.assertArrayEquals(before.floats, after.floats);
+  }
+
+  @Test
+  public void testStringArray() {
+    Assertions.assertArrayEquals(before.strings, after.strings);
   }
 }

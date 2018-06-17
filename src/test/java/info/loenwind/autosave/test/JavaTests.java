@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import info.loenwind.autosave.Reader;
 import info.loenwind.autosave.Writer;
 import info.loenwind.autosave.annotations.Store;
-import info.loenwind.autosave.util.Log;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -18,18 +17,28 @@ public class JavaTests {
 
   private static class Holder {
 
-    public @Store boolean    bool;
-    public @Store float      floaty;
-    public @Store float[]    floaties = new float[4]; // Handler will not create a new array
-    public @Store int        integer;
+    public @Store boolean bool;
+    public @Store char    character;
+    public @Store byte    bite;
+    public @Store short   shorty;
+    public @Store int     integer;
+    public @Store long    longy;
+    public @Store float   floaty;
+    public @Store double  doubly;
+
     public @Store String     string;
     public @Store EnumFacing facing;
 
     void fill() {
       bool = true;
-      floaty = 3.141569F;
-      floaties = new float[] { 1, 0.5F, 0.25F, 0.125F };
+      character = 'q';
+      bite = 127;
+      shorty = 1098;
       integer = 42;
+      longy = 999_999_999_999L;
+      floaty = 3.141569F;
+      doubly = Math.PI * 2;
+      
       string = "Hello World!";
       facing = EnumFacing.WEST;
     }
@@ -54,16 +63,20 @@ public class JavaTests {
   public void testBoolean() {
     Assertions.assertEquals(before.bool, after.bool);
   }
-
+  
   @Test
-  public void testFloat() {
-    Assertions.assertEquals(before.floaty, after.floaty, 0.01F);
+  public void testChar() {
+    Assertions.assertEquals(before.character, after.character);
   }
 
   @Test
-  public void testFloatArray() {
-    Assertions.assertNotNull(after.floaties);
-    Assertions.assertArrayEquals(before.floaties, after.floaties, 0.01F);
+  public void testByte() {
+    Assertions.assertEquals(before.bite, after.bite);
+  }
+
+  @Test
+  public void testShort() {
+    Assertions.assertEquals(before.shorty, after.shorty);
   }
 
   @Test
@@ -71,6 +84,21 @@ public class JavaTests {
     Assertions.assertEquals(before.integer, after.integer);
   }
 
+  @Test
+  public void testLong() {
+    Assertions.assertEquals(before.longy, after.longy);
+  }
+
+  @Test
+  public void testFloat() {
+    Assertions.assertEquals(before.floaty, after.floaty, 0.01F);
+  }
+
+  @Test
+  public void testDouble() {
+    Assertions.assertEquals(before.doubly, after.doubly);
+  }
+  
   @Test
   public void testString() {
     Assertions.assertNotNull(after.string);

@@ -41,8 +41,11 @@ public class HandleFloatArray implements IHandler<float[]> {
   @Override
   public @Nullable float[] read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name,
       @Nullable float[] object) {
-    if (nbt.hasKey(name) && object != null) {
+    if (nbt.hasKey(name)) {
       int[] tmp = nbt.getIntArray(name);
+      if (object == null) {
+        object = new float[tmp.length];
+      }
       for (int i = 0; i < object.length; i++) {
         if (i < tmp.length) {
           object[i] = Float.intBitsToFloat(tmp[i]);

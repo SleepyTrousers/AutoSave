@@ -13,18 +13,20 @@ import info.loenwind.autosave.handlers.forge.HandleFluid;
 import info.loenwind.autosave.handlers.forge.HandleFluidStack;
 import info.loenwind.autosave.handlers.internal.HandleStorable;
 import info.loenwind.autosave.handlers.java.HandleArrayList;
-import info.loenwind.autosave.handlers.java.HandleBoolean;
+import info.loenwind.autosave.handlers.java.HandleArrays;
 import info.loenwind.autosave.handlers.java.HandleEnum;
-import info.loenwind.autosave.handlers.java.HandleFloat;
 import info.loenwind.autosave.handlers.java.HandleFloatArray;
 import info.loenwind.autosave.handlers.java.HandleHashMap;
-import info.loenwind.autosave.handlers.java.HandleInteger;
+import info.loenwind.autosave.handlers.java.HandlePrimitive;
 import info.loenwind.autosave.handlers.java.HandleString;
 import info.loenwind.autosave.handlers.minecraft.HandleBlockPos;
 import info.loenwind.autosave.handlers.minecraft.HandleIBlockState;
 import info.loenwind.autosave.handlers.minecraft.HandleItem;
 import info.loenwind.autosave.handlers.minecraft.HandleItemStack;
 import info.loenwind.autosave.handlers.minecraft.HandleItemStackArray;
+import info.loenwind.autosave.util.NonnullType;
+import info.loenwind.autosave.util.NullableType;
+import net.minecraft.nbt.NBTTagCompound;
 
 /**
  * A registry for {@link IHandler}s.
@@ -47,12 +49,28 @@ public class Registry {
 
   static {
     // Java primitives
-    GLOBAL_REGISTRY.register(new HandleFloat());
-    GLOBAL_REGISTRY.register(new HandleInteger());
-    GLOBAL_REGISTRY.register(new HandleBoolean());
-    GLOBAL_REGISTRY.register(new HandleFloatArray());
+    GLOBAL_REGISTRY.register(new HandlePrimitive<Boolean>(false, Boolean.class, boolean.class, NBTTagCompound::setBoolean, NBTTagCompound::getBoolean));
+    GLOBAL_REGISTRY.register(new HandlePrimitive<Character>((char) 0, Character.class, char.class, 
+        (nbt, name, c) -> nbt.setInteger(name, (int) c), (nbt, name) -> (char) nbt.getInteger(name)));
+    GLOBAL_REGISTRY.register(new HandlePrimitive<Byte>((byte) 0, Byte.class, byte.class, NBTTagCompound::setByte, NBTTagCompound::getByte));
+    GLOBAL_REGISTRY.register(new HandlePrimitive<Short>((short) 0, Short.class, short.class, NBTTagCompound::setShort, NBTTagCompound::getShort));
+    GLOBAL_REGISTRY.register(new HandlePrimitive<Integer>(0, Integer.class, int.class, NBTTagCompound::setInteger, NBTTagCompound::getInteger));
+    GLOBAL_REGISTRY.register(new HandlePrimitive<Long>(0L, Long.class, long.class, NBTTagCompound::setLong, NBTTagCompound::getLong));
+    GLOBAL_REGISTRY.register(new HandlePrimitive<Float>(0F, Float.class, float.class, NBTTagCompound::setFloat, NBTTagCompound::getFloat));
+    GLOBAL_REGISTRY.register(new HandlePrimitive<Double>(0D, Double.class, double.class, NBTTagCompound::setDouble, NBTTagCompound::getDouble));
     GLOBAL_REGISTRY.register(new HandleEnum());
     GLOBAL_REGISTRY.register(new HandleString());
+    
+    // Simple array handlers
+    GLOBAL_REGISTRY.register(new HandlePrimitive<int @NullableType[]>(new int[0], int[].class, null, NBTTagCompound::setIntArray, NBTTagCompound::getIntArray));
+    GLOBAL_REGISTRY.register(new HandlePrimitive<byte @NullableType[]>(new byte[0], byte[].class, null, NBTTagCompound::setByteArray, NBTTagCompound::getByteArray));
+    
+    // Special case array handlers
+    // TODO make a generic version of this for the remaining primitive array types that NBT does not natively support
+    GLOBAL_REGISTRY.register(new HandleFloatArray());
+    
+    // Fallback array handler
+    GLOBAL_REGISTRY.register(new HandleArrays());
     
     // Collections
     try {

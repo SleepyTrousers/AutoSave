@@ -61,9 +61,7 @@ public abstract class HandleAbstractCollection<T extends Collection> extends Han
       int size = tag.getInteger("size");
       for (int i = 0; i < size; i++) {
         if (tag.hasKey(i + "")) {
-          for (IHandler handler : subHandlers[0]) {
-            object.add(handler.read(registry, phase, tag, null, i + "", null));
-          }
+          object.add(readRecursive(0, registry, phase, tag, null, i + "", null));
         } else {
 //          object.add(makeEmptyValueObject()); // TODO
         }
