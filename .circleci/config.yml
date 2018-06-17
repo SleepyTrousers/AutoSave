@@ -23,6 +23,9 @@ job_definition: &job_definition
     # run tests!
     - run: ./gradlew test
     
+    - store_test_results:
+      path: build/reports/tests
+    
     - save_cache:
         paths:
           - ~/.gradle
