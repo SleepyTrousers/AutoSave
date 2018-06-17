@@ -39,3 +39,10 @@ jobs:
     docker:
       - image: circleci/java:8-jdk
     <<: *job_definition
+
+workflows:
+  version: 2
+  all:
+    jobs:
+      - openjdk8
+      - oraclejdk8
