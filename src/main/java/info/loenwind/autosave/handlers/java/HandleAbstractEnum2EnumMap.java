@@ -43,8 +43,8 @@ public class HandleAbstractEnum2EnumMap<K extends Enum<K>, V extends Enum<V>> im
   }
 
   @Override
-  public boolean canHandle(Class<?> clazz) {
-    return false;
+  public Class<?> getRootType() {
+    return EnumMap.class;
   }
 
   @Override

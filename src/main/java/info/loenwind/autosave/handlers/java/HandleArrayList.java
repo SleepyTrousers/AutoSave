@@ -1,20 +1,44 @@
 package info.loenwind.autosave.handlers.java;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
+import info.loenwind.autosave.util.TypeUtil;
 
-public class HandleArrayList<E> extends HandleAbstractCollection<E, ArrayList<E>> {
+@SuppressWarnings("rawtypes")
+public class HandleArrayList extends HandleAbstractCollection<ArrayList> {
+  
+  public HandleArrayList() throws NoHandlerFoundException {
+    this(new Type[0]);
+  }
 
-  protected HandleArrayList(IHandler<E> elemHandler) {
-    super(elemHandler);
+  protected HandleArrayList(Type... types) throws NoHandlerFoundException {
+    super(types);
   }
 
   @Override
-  protected @Nonnull ArrayList<E> makeCollection() {
-    return new ArrayList<E>();
+  protected @Nonnull ArrayList makeCollection() {
+    return new ArrayList();
+  }
+  
+  @Override
+  protected boolean canHandle(Type type) {
+    return TypeUtil.toClass(type) == List.class || super.canHandle(type);
+  }
+  
+  @Override
+  public Class<?> getRootType() {
+    return ArrayList.class;
+  }
+
+  @Override
+  protected IHandler<? extends ArrayList> create(Type... types) throws NoHandlerFoundException {
+    return new HandleArrayList(types);
   }
 
 }

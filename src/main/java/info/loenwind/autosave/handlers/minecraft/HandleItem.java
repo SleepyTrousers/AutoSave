@@ -20,8 +20,8 @@ public class HandleItem implements IHandler<Item> {
   }
 
   @Override
-  public boolean canHandle(Class<?> clazz) {
-    return ItemStack.class.isAssignableFrom(clazz);
+  public Class<?> getRootType() {
+    return ItemStack.class;
   }
 
   // Note: We can use the item ID here because ItemStack also uses it in its NBT-methods. So if the ID breaks, ItemStacks break even harder than we do here. 

@@ -1,6 +1,7 @@
 package info.loenwind.autosave.handlers;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -9,6 +10,7 @@ import javax.annotation.Nullable;
 import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.util.NBTAction;
+import info.loenwind.autosave.util.TypeUtil;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
@@ -27,14 +29,28 @@ import net.minecraft.nbt.NBTTagCompound;
 public interface IHandler<T> {
 
   /**
-   * Checks if the handler can handle the given class. This is ony used for
-   * handlers that are registered with the {@link Registry}.
+   * Checks if the handler can handle the given type, and if so, returns an
+   * instance for handling it. This is ony used for handlers that are registered
+   * with the {@link Registry}.
    * 
-   * @param clazz
-   *          A class that wants to be handled
-   * @return true if the handler can handle the class
+   * @param type
+   *          A type that wants to be handled
+   * @return An {@link IHandler} to handle the given type, if possible. <code>null</code otherwise.
    */
-  boolean canHandle(Class<?> clazz);
+  default IHandler<? extends T> getHandler(@Nonnull Type type) {
+    return TypeUtil.isAssignable(getRootType(), type) ? this : null;
+  }
+  
+  /**
+   * Utility method for simple handlers that handle a single class. Only used by
+   * {@link #getHandler(Type)}.
+   * 
+   * @return The {@link #getClass()} this handler can handle.
+   */
+  default @Nonnull Class<?> getRootType() {
+    // Should be equivalent to null without being null. Nothing can extend, nor would use Void.
+    return Void.class;
+  }
 
   /**
    * Stores an object in a NBT structure.

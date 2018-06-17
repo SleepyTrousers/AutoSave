@@ -17,8 +17,8 @@ public class HandleString implements IHandler<String> {
   }
 
   @Override
-  public boolean canHandle(Class<?> clazz) {
-    return String.class.isAssignableFrom(clazz);
+  public Class<?> getRootType() {
+    return String.class;
   }
 
   @Override

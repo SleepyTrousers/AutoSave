@@ -1,6 +1,7 @@
 package info.loenwind.autosave.handlers.forge;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -21,8 +22,8 @@ public class HandleFluid implements IHandler<Fluid> {
   }
 
   @Override
-  public boolean canHandle(Class<?> clazz) {
-    return Fluid.class.isAssignableFrom(clazz);
+  public Class<?> getRootType() {
+    return Fluid.class;
   }
 
   @Override

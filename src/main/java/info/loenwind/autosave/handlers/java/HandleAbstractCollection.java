@@ -1,6 +1,7 @@
 package info.loenwind.autosave.handlers.java;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Set;
 
@@ -13,29 +14,33 @@ import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.NBTAction;
 import net.minecraft.nbt.NBTTagCompound;
 
-public abstract class HandleAbstractCollection<E, C extends Collection<E>> implements IHandler<C> {
+@SuppressWarnings({"rawtypes", "unchecked"})
+public abstract class HandleAbstractCollection<T extends Collection> extends HandleGenericType<T> {
+  
+  public HandleAbstractCollection() throws NoHandlerFoundException { 
+    this(new Type[0]); 
+  }
 
-  private final IHandler<E> elemHandler;
-
-  protected HandleAbstractCollection(IHandler<E> elemHandler) {
-    this.elemHandler = elemHandler;
+  protected HandleAbstractCollection(Type... types) throws NoHandlerFoundException {
+    super(types);
   }
 
   @Override
-  public boolean canHandle(Class<?> clazz) {
-    // This handler needs to be sub-classed and annotated to be used because the Generics on the List<E> will have been deleted when canHandle() would need them
-    return false;
+  public Class<?> getRootType() {
+    return Collection.class;
   }
 
   @Override
-  public boolean store(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nonnull String name, @Nonnull C object)
+  public boolean store(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nonnull String name, @Nonnull T object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     NBTTagCompound tag = new NBTTagCompound();
     tag.setInteger("size", object.size());
     int i = 0;
-    for (E elem : object) {
+    for (Object elem : object) {
       if (elem != null) {
-        elemHandler.store(registry, phase, tag, i + "", elem);
+        for (IHandler handler : subHandlers[0]) {
+          handler.store(registry, phase, tag, i + "", elem);
+        }
       }
       i++;
     }
@@ -44,8 +49,8 @@ public abstract class HandleAbstractCollection<E, C extends Collection<E>> imple
   }
 
   @Override
-  public C read(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nullable Field field, @Nonnull String name,
-      @Nullable C object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
+  public T read(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nullable Field field, @Nonnull String name,
+      @Nullable T object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     if (nbt.hasKey(name)) {
       if (object == null) {
         object = makeCollection();
@@ -57,19 +62,16 @@ public abstract class HandleAbstractCollection<E, C extends Collection<E>> imple
       int size = tag.getInteger("size");
       for (int i = 0; i < size; i++) {
         if (tag.hasKey(i + "")) {
-          object.add(elemHandler.read(registry, phase, tag, null, i + "", makeEmptyValueObject()));
+          for (IHandler handler : subHandlers[0]) {
+            object.add(handler.read(registry, phase, tag, null, i + "", null));
+          }
         } else {
-          object.add(makeEmptyValueObject());
+//          object.add(makeEmptyValueObject()); // TODO
         }
       }
     }
     return object;
   }
 
-  abstract protected @Nonnull C makeCollection();
-
-  protected @Nullable E makeEmptyValueObject() {
-    return null;
-  }
-
+  abstract protected @Nonnull T makeCollection();
 }

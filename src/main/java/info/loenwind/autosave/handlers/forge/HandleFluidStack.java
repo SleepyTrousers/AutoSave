@@ -19,8 +19,8 @@ public class HandleFluidStack implements IHandler<FluidStack> {
   }
 
   @Override
-  public boolean canHandle(Class<?> clazz) {
-    return FluidStack.class.isAssignableFrom(clazz);
+  public Class<?> getRootType() {
+    return FluidStack.class;
   }
 
   @Override

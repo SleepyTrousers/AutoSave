@@ -10,7 +10,6 @@ import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.engine.StorableEngine;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
-import info.loenwind.autosave.handlers.java.HandleArrayList;
 import info.loenwind.autosave.util.NBTAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,8 +20,8 @@ public class HandleItemStack implements IHandler<ItemStack> {
   }
 
   @Override
-  public boolean canHandle(Class<?> clazz) {
-    return ItemStack.class.isAssignableFrom(clazz);
+  public Class<?> getRootType() {
+    return ItemStack.class;
   }
 
   @Override
@@ -49,17 +48,4 @@ public class HandleItemStack implements IHandler<ItemStack> {
     }
     return object;
   }
-
-  public static class HandleItemStackArrayList extends HandleArrayList<ItemStack> {
-
-    public HandleItemStackArrayList() {
-      super(new HandleItemStack());
-    }
-
-    @Override
-    protected @Nonnull ItemStack makeEmptyValueObject() {
-      return ItemStack.EMPTY;
-    }
-  }
-
 }

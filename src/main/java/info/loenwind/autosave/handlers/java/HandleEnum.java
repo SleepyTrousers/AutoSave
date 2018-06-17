@@ -18,8 +18,8 @@ public class HandleEnum implements IHandler<Enum<?>> {
   }
 
   @Override
-  public boolean canHandle(Class<?> clazz) {
-    return Enum.class.isAssignableFrom(clazz);
+  public Class<?> getRootType() {
+    return Enum.class;
   }
 
   @Override

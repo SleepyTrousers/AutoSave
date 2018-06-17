@@ -20,8 +20,8 @@ public class HandleBlockPos implements IHandler<BlockPos> {
   }
 
   @Override
-  public boolean canHandle(Class<?> clazz) {
-    return BlockPos.class.isAssignableFrom(clazz);
+  public Class<?> getRootType() {
+    return BlockPos.class;
   }
 
   @Override
@@ -39,13 +39,4 @@ public class HandleBlockPos implements IHandler<BlockPos> {
     }
     return object;
   }
-
-  public static class HandleBlockPosList extends HandleArrayList<BlockPos> {
-
-    public HandleBlockPosList() {
-      super(new HandleBlockPos());
-    }
-
-  }
-
 }

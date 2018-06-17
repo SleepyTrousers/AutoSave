@@ -1,6 +1,7 @@
 package info.loenwind.autosave.engine;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -198,7 +199,7 @@ public class StorableEngine {
         ArrayList<IHandler> handlerList = new ArrayList<IHandler>();
         String fieldName = field.getName();
         if (fieldName != null) {
-          Class<?> fieldType = field.getType();
+          Type fieldType = field.getGenericType();
           if (annotation.handler() != NullHandler.class) {
             handlerList.add(annotation.handler().newInstance());
           }

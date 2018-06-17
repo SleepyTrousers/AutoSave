@@ -20,8 +20,8 @@ public class HandleIBlockState implements IHandler<IBlockState> {
   }
 
   @Override
-  public boolean canHandle(Class<?> clazz) {
-    return IBlockState.class.isAssignableFrom(clazz);
+  public Class<?> getRootType() {
+    return IBlockState.class;
   }
 
   @Override

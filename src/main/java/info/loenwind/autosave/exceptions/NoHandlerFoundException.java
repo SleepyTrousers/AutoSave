@@ -1,6 +1,7 @@
 package info.loenwind.autosave.exceptions;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 
 public class NoHandlerFoundException extends Exception {
 
@@ -10,8 +11,11 @@ public class NoHandlerFoundException extends Exception {
     super("No storage handler found for field " + field.getName() + " of type " + field.getType() + " of " + o);
   }
 
-  public NoHandlerFoundException(Class<?> clazz, String name) {
-    super("No storage handler found for field " + name + " of type " + clazz);
+  public NoHandlerFoundException(Type type, String name) {
+    this(type, name, null);
   }
 
+  public NoHandlerFoundException(Type type, String name, Exception e) {
+    super("No storage handler found for field " + name + " of type " + type, e);
+  }
 }

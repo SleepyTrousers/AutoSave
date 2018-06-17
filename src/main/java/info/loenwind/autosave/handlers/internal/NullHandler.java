@@ -28,11 +28,6 @@ public class NullHandler implements IHandler<NullHandler> {
   }
 
   @Override
-  public boolean canHandle(Class<?> clazz) {
-    return false;
-  }
-
-  @Override
   public boolean store(@Nonnull Registry registry, @Nonnull Set<NBTAction> phase, @Nonnull NBTTagCompound nbt, @Nonnull String name,
       @Nonnull NullHandler object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     return false;

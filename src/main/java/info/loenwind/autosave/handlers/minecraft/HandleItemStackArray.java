@@ -19,8 +19,8 @@ public class HandleItemStackArray implements IHandler<ItemStack[]> {
   }
 
   @Override
-  public boolean canHandle(Class<?> clazz) {
-    return ItemStack[].class.isAssignableFrom(clazz);
+  public Class<?> getRootType() {
+    return ItemStack[].class;
   }
 
   @Override

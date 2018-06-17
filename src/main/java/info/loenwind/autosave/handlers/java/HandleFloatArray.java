@@ -17,8 +17,8 @@ public class HandleFloatArray implements IHandler<float[]> {
   }
 
   @Override
-  public boolean canHandle(Class<?> clazz) {
-    return float[].class.isAssignableFrom(clazz);
+  public Class<?> getRootType() {
+    return float[].class;
   }
 
   @Override

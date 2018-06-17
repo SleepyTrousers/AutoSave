@@ -28,9 +28,9 @@ public class HandleAbstractEnumMap<K extends Enum<K>, V> implements IHandler<Enu
   }
 
   @Override
-  public boolean canHandle(Class<?> clazz) {
+  public Class<?> getRootType() {
     // This handler needs to be sub-classed and annotated to be used because the Generics on the List<E> will have been deleted when canHandle() would need them
-    return false;
+    return EnumMap.class;
   }
 
   @Override

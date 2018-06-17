@@ -1,6 +1,7 @@
 package info.loenwind.autosave.handlers.internal;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -14,6 +15,7 @@ import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.NBTAction;
 import info.loenwind.autosave.util.NullHelper;
+import info.loenwind.autosave.util.TypeUtil;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
@@ -39,9 +41,10 @@ public class HandleStorable<T extends Object> implements IHandler<T> {
   }
 
   @Override
-  public boolean canHandle(Class<?> clazz) {
-    Storable annotation = clazz.getAnnotation(info.loenwind.autosave.annotations.Storable.class);
-    return annotation != null && annotation.handler() == this.getClass();
+  public IHandler<T> getHandler(Type type) {
+    Class<?> clazz = TypeUtil.toClass(type);
+    Storable annotation = clazz.getAnnotation(Storable.class);
+    return annotation != null && annotation.handler() == this.getClass() ? this : null;
   }
 
   @Override

@@ -1,5 +1,6 @@
 package info.loenwind.autosave;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,14 +8,17 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import info.loenwind.autosave.annotations.Storable;
+import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.handlers.forge.HandleFluid;
 import info.loenwind.autosave.handlers.forge.HandleFluidStack;
 import info.loenwind.autosave.handlers.internal.HandleStorable;
+import info.loenwind.autosave.handlers.java.HandleArrayList;
 import info.loenwind.autosave.handlers.java.HandleBoolean;
 import info.loenwind.autosave.handlers.java.HandleEnum;
 import info.loenwind.autosave.handlers.java.HandleFloat;
 import info.loenwind.autosave.handlers.java.HandleFloatArray;
+import info.loenwind.autosave.handlers.java.HandleHashMap;
 import info.loenwind.autosave.handlers.java.HandleInteger;
 import info.loenwind.autosave.handlers.java.HandleString;
 import info.loenwind.autosave.handlers.minecraft.HandleBlockPos;
@@ -31,7 +35,7 @@ import info.loenwind.autosave.handlers.minecraft.HandleItemStackArray;
  * When looking for handlers, all handlers from this registry and all its super-registries will be returned in order.
  *
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({ "rawtypes" })
 public class Registry {
 
   /**
@@ -50,6 +54,12 @@ public class Registry {
     GLOBAL_REGISTRY.register(new HandleFloatArray());
     GLOBAL_REGISTRY.register(new HandleEnum());
     GLOBAL_REGISTRY.register(new HandleString());
+    
+    // Collections
+    try {
+      GLOBAL_REGISTRY.register(new HandleArrayList());
+      GLOBAL_REGISTRY.register(new HandleHashMap());
+    } catch (NoHandlerFoundException e) {}
 
     // Minecraft basic types
     GLOBAL_REGISTRY.register(new HandleItemStackArray());
@@ -138,29 +148,32 @@ public class Registry {
    * <p>
    * Note 3: If a handler can handle a class but not its subclasses, it will not be added to this list for the subclasses.
    * 
-   * @param clazz
+   * @param type
    *          The class that should be handled
    * @return A list of all {@link IHandler}s that can handle the class. If none are found, an empty list is returned.
    * @throws InstantiationException
    * @throws IllegalAccessException
    */
   @Nonnull
-  public List<IHandler> findHandlers(Class<?> clazz) throws InstantiationException, IllegalAccessException {
+  public List<IHandler> findHandlers(Type type) throws InstantiationException, IllegalAccessException {
     List<IHandler> result = new ArrayList<IHandler>();
 
-    Storable annotation = clazz.getAnnotation(Storable.class);
-    while (annotation != null) {
-      if (annotation.handler() != HandleStorable.class) {
-        result.add(annotation.handler().newInstance());
-      }
-      Class<?> superclass = clazz.getSuperclass();
-      if (superclass != null) {
-        annotation = superclass.getAnnotation(Storable.class);
+    if (type instanceof Class) {
+      Class<?> clazz = (Class<?>) type;
+      Storable annotation = clazz.getAnnotation(Storable.class);
+      while (annotation != null) {
+        if (annotation.handler() != HandleStorable.class) {
+          result.add(annotation.handler().newInstance());
+        }
+        Class<?> superclass = clazz.getSuperclass();
+        if (superclass != null) {
+          annotation = superclass.getAnnotation(Storable.class);
+        }
       }
     }
 
-    findRegisteredHandlers(clazz, result);
-
+    findRegisteredHandlers(type, result);
+      
     return result;
   }
 
@@ -170,15 +183,16 @@ public class Registry {
    * @param clazz
    * @param result
    */
-  private void findRegisteredHandlers(Class<?> clazz, List<IHandler> result) {
+  private void findRegisteredHandlers(Type type, List<IHandler> result) {
     for (IHandler handler : handlers) {
-      if (handler.canHandle(clazz)) {
+      handler = handler.getHandler(type);
+      if (handler != null) {
         result.add(handler);
       }
     }
     final Registry thisParent = parent;
     if (thisParent != null) {
-      thisParent.findRegisteredHandlers(clazz, result);
+      thisParent.findRegisteredHandlers(type, result);
     }
   }
 
