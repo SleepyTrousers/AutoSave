@@ -17,11 +17,11 @@ import net.minecraft.nbt.NBTTagCompound;
 public abstract class HandleAbstractCollection<T extends Collection> extends HandleGenericType<T> {
   
   public HandleAbstractCollection() throws NoHandlerFoundException { 
-    this(new Type[0]); 
+    this(Registry.GLOBAL_REGISTRY, new Type[0]); 
   }
 
-  protected HandleAbstractCollection(Type... types) throws NoHandlerFoundException {
-    super(types);
+  protected HandleAbstractCollection(Registry registry, Type... types) throws NoHandlerFoundException {
+    super(registry, types);
   }
 
   @Override

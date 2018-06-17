@@ -24,15 +24,15 @@ public class HandleArrays implements IHandler<Object> {
   private final List<IHandler> componentHandlers; 
   
   public HandleArrays() {
-    this(null);
+    this(Registry.GLOBAL_REGISTRY, null);
   }
   
-  protected HandleArrays(@Nullable Type componentType) {
+  protected HandleArrays(Registry registry, @Nullable Type componentType) {
     this.componentType = componentType;
     List<IHandler> handlers = NullHelper.notnullJ(Collections.emptyList(), "Collections.emptyList()");
     if (componentType != null) {
       try {
-        handlers = Registry.GLOBAL_REGISTRY.findHandlers(componentType);
+        handlers = registry.findHandlers(componentType);
       } catch (InstantiationException | IllegalAccessException e) {}
     }
     this.componentHandlers = handlers;
@@ -40,10 +40,10 @@ public class HandleArrays implements IHandler<Object> {
   
   @Override
   @Nullable
-  public IHandler<?> getHandler(Type type) {
+  public IHandler<?> getHandler(Registry registry, Type type) {
     Class<?> clazz = TypeUtil.toClass(type);
     if (clazz.isArray()) {
-      return new HandleArrays(clazz.getComponentType()); 
+      return new HandleArrays(registry, clazz.getComponentType()); 
     }
     return null;
   }

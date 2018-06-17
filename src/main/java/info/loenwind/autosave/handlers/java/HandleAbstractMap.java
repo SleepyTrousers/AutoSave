@@ -19,8 +19,8 @@ import net.minecraftforge.common.util.Constants;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class HandleAbstractMap<T extends Map> extends HandleGenericType<T> {
 
-  protected HandleAbstractMap(Type... types) throws NoHandlerFoundException {
-    super(types);
+  protected HandleAbstractMap(Registry registry, Type... types) throws NoHandlerFoundException {
+    super(registry, types);
   }
 
   @Override

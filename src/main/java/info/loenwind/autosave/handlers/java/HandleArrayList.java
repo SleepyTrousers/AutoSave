@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.TypeUtil;
@@ -12,11 +13,11 @@ import info.loenwind.autosave.util.TypeUtil;
 public class HandleArrayList extends HandleAbstractCollection<ArrayList> {
   
   public HandleArrayList() throws NoHandlerFoundException {
-    this(new Type[0]);
+    this(Registry.GLOBAL_REGISTRY, new Type[0]);
   }
 
-  protected HandleArrayList(Type... types) throws NoHandlerFoundException {
-    super(types);
+  protected HandleArrayList(Registry registry, Type... types) throws NoHandlerFoundException {
+    super(registry, types);
   }
 
   @Override
@@ -35,8 +36,8 @@ public class HandleArrayList extends HandleAbstractCollection<ArrayList> {
   }
 
   @Override
-  protected IHandler<? extends ArrayList> create(Type... types) throws NoHandlerFoundException {
-    return new HandleArrayList(types);
+  protected IHandler<? extends ArrayList> create(Registry registry, Type... types) throws NoHandlerFoundException {
+    return new HandleArrayList(registry, types);
   }
 
 }

@@ -202,7 +202,7 @@ public class Registry {
    */
   private void findRegisteredHandlers(Type type, List<IHandler> result) {
     for (IHandler handler : handlers) {
-      handler = handler.getHandler(type);
+      handler = handler.getHandler(this, type);
       if (handler != null) {
         result.add(handler);
       }

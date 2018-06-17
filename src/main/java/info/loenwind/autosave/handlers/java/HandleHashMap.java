@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.TypeUtil;
@@ -12,11 +13,11 @@ import info.loenwind.autosave.util.TypeUtil;
 public class HandleHashMap extends HandleAbstractMap<HashMap> {
   
   public HandleHashMap() throws NoHandlerFoundException {
-    this(new Type[0]);
+    this(Registry.GLOBAL_REGISTRY, new Type[0]);
   }
 
-  protected HandleHashMap(Type... types) throws NoHandlerFoundException {
-    super(types);
+  protected HandleHashMap(Registry registry, Type... types) throws NoHandlerFoundException {
+    super(registry, types);
   }
 
   @Override
@@ -25,8 +26,8 @@ public class HandleHashMap extends HandleAbstractMap<HashMap> {
   }
 
   @Override
-  protected IHandler<? extends HashMap> create(Type... types) throws NoHandlerFoundException {
-    return new HandleHashMap(types);
+  protected IHandler<? extends HashMap> create(Registry registry, Type... types) throws NoHandlerFoundException {
+    return new HandleHashMap(registry, types);
   }
 
   @Override

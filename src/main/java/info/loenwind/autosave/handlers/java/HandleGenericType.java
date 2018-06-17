@@ -22,7 +22,7 @@ public abstract class HandleGenericType<T> implements IHandler<T> {
   @SuppressWarnings("unchecked")
   protected final List<IHandler>[] subHandlers = (List<IHandler>[]) new List[getRequiredParameters()];
 
-  protected HandleGenericType(Type... parameterTypes) throws NoHandlerFoundException {
+  protected HandleGenericType(Registry registry, Type... parameterTypes) throws NoHandlerFoundException {
     if (parameterTypes.length == 0) {
       return;
     }
@@ -35,7 +35,7 @@ public abstract class HandleGenericType<T> implements IHandler<T> {
         throw new IllegalArgumentException("Null type passed to HandleGenericType()");
       }
       try {
-        List<IHandler> handlers = Registry.GLOBAL_REGISTRY.findHandlers(type);
+        List<IHandler> handlers = registry.findHandlers(type);
         if (handlers.isEmpty()) {
           throw new NoHandlerFoundException(type, "Unknown");
         }
@@ -49,7 +49,7 @@ public abstract class HandleGenericType<T> implements IHandler<T> {
   @Override
   public abstract Class<?> getRootType();
   
-  protected abstract IHandler<? extends T> create(Type... types) throws NoHandlerFoundException;
+  protected abstract IHandler<? extends T> create(Registry registry, Type... types) throws NoHandlerFoundException;
   
   protected int getRequiredParameters() {
     return getRootType().getTypeParameters().length;
@@ -60,14 +60,14 @@ public abstract class HandleGenericType<T> implements IHandler<T> {
   }
   
   @Override
-  public @Nullable IHandler<? extends T> getHandler(Type type) {
+  public @Nullable IHandler<? extends T> getHandler(Registry registry, Type type) {
     if (!canHandle(type)) {
       return null;
     }
     
     if (type instanceof ParameterizedType) {
       try {
-        return create(NullHelper.notnullJ(((ParameterizedType) type).getActualTypeArguments(), "ParameterizedType#getActualTypeArguments"));
+        return create(registry, NullHelper.notnullJ(((ParameterizedType) type).getActualTypeArguments(), "ParameterizedType#getActualTypeArguments"));
       } catch (NoHandlerFoundException e) {
       } // Fallthrough to return null
     }

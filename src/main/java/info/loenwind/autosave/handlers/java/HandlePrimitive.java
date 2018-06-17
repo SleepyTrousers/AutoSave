@@ -44,7 +44,7 @@ public class HandlePrimitive<T> implements IHandler<T> {
   }
 
   @Override
-  public @Nullable IHandler<T> getHandler(Type type) {
+  public @Nullable IHandler<T> getHandler(Registry registry, Type type) {
     Class<?> primitive = primitiveClass;
     return (primitive != null && TypeUtil.isAssignable(primitive, type)) || TypeUtil.isAssignable(boxedClass, type) ? this : null;
   }

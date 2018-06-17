@@ -40,7 +40,7 @@ public class HandleStorable<T extends Object> implements IHandler<T> {
   }
 
   @Override
-  public @Nullable IHandler<T> getHandler(Type type) {
+  public @Nullable IHandler<T> getHandler(Registry registry, Type type) {
     Class<?> clazz = TypeUtil.toClass(type);
     Storable annotation = clazz.getAnnotation(Storable.class);
     return annotation != null && annotation.handler() == this.getClass() ? this : null;

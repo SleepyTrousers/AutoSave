@@ -36,7 +36,7 @@ public interface IHandler<T> {
    *          A type that wants to be handled
    * @return An {@link IHandler} to handle the given type, if possible. <code>null</code otherwise.
    */
-  default @Nullable IHandler<? extends T> getHandler(Type type) {
+  default @Nullable IHandler<? extends T> getHandler(Registry registry, Type type) {
     return TypeUtil.isAssignable(getRootType(), type) ? this : null;
   }
   
