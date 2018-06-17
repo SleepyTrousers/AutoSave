@@ -39,7 +39,7 @@ Reader.read(tag, object);
 
 ### Automatic recursive serializer support
 
-```
+```java
 @Storable
 public class StorableExample {
     
