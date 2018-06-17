@@ -24,7 +24,7 @@ job_definition: &job_definition
     - run: ./gradlew test
     
     - store_test_results:
-      path: build/reports/tests
+        path: build/reports/tests
     
     - save_cache:
         paths:
