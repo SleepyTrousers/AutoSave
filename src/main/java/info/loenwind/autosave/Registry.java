@@ -15,6 +15,8 @@ import info.loenwind.autosave.handlers.internal.HandleStorable;
 import info.loenwind.autosave.handlers.java.HandleArrayList;
 import info.loenwind.autosave.handlers.java.HandleArrays;
 import info.loenwind.autosave.handlers.java.HandleEnum;
+import info.loenwind.autosave.handlers.java.HandleEnum2EnumMap;
+import info.loenwind.autosave.handlers.java.HandleEnumMap;
 import info.loenwind.autosave.handlers.java.HandleFloatArray;
 import info.loenwind.autosave.handlers.java.HandleHashMap;
 import info.loenwind.autosave.handlers.java.HandlePrimitive;
@@ -24,7 +26,6 @@ import info.loenwind.autosave.handlers.minecraft.HandleIBlockState;
 import info.loenwind.autosave.handlers.minecraft.HandleItem;
 import info.loenwind.autosave.handlers.minecraft.HandleItemStack;
 import info.loenwind.autosave.handlers.minecraft.HandleItemStackArray;
-import info.loenwind.autosave.util.NonnullType;
 import info.loenwind.autosave.util.NullableType;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -75,7 +76,10 @@ public class Registry {
     // Collections
     try {
       GLOBAL_REGISTRY.register(new HandleArrayList());
+      
       GLOBAL_REGISTRY.register(new HandleHashMap());
+      GLOBAL_REGISTRY.register(new HandleEnum2EnumMap<>()); // This MUST be before HandleEnumMap as it is a special case
+      GLOBAL_REGISTRY.register(new HandleEnumMap<>());
     } catch (NoHandlerFoundException e) {}
 
     // Minecraft basic types

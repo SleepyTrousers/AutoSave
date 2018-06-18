@@ -63,7 +63,7 @@ public abstract class HandleAbstractCollection<T extends Collection> extends Han
         if (tag.hasKey(i + "")) {
           object.add(readRecursive(0, registry, phase, tag, null, i + "", null));
         } else {
-//          object.add(makeEmptyValueObject()); // TODO
+          object.add(null);
         }
       }
     }

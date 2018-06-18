@@ -1,5 +1,6 @@
 package info.loenwind.autosave.test;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,11 +12,16 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Lists;
+import com.google.common.reflect.TypeToken;
 
 import info.loenwind.autosave.Reader;
+import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.Writer;
 import info.loenwind.autosave.annotations.Store;
+import info.loenwind.autosave.handlers.IHandler;
+import info.loenwind.autosave.handlers.java.HandleEnum2EnumMap;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 
 public class CollectionTests {
 
@@ -23,12 +29,23 @@ public class CollectionTests {
 
     public @Store List<String> strings;
     public @Store Map<String, Integer> intMap;
+    public @Store EnumMap<EnumFacing, String> facingMap;
+    public @Store EnumMap<EnumFacing, EnumFacing> facing2facing;
 
     void fill() {
       strings = Lists.newArrayList("foo", "bar");
+      
       intMap = new HashMap<>();
       intMap.put("foo", 123);
       intMap.put("bar", 456);
+      
+      facingMap = new EnumMap<>(EnumFacing.class);
+      facingMap.put(EnumFacing.UP, "up");
+      facingMap.put(EnumFacing.DOWN, "down");
+      
+      facing2facing = new EnumMap<>(EnumFacing.class);
+      facing2facing.put(EnumFacing.UP, EnumFacing.DOWN);
+      facing2facing.put(EnumFacing.EAST, EnumFacing.WEST);
     }
 
   }
@@ -46,6 +63,15 @@ public class CollectionTests {
     Reader.read(tag, after);
   }
 
+  @SuppressWarnings("serial")
+  @Test
+  public void testEnum2EnumHandler() throws InstantiationException, IllegalAccessException {
+    @SuppressWarnings("rawtypes")
+    List<IHandler> handlers = Registry.GLOBAL_REGISTRY.findHandlers(new TypeToken<EnumMap<EnumFacing, EnumFacing>>(){}.getType());
+    Assertions.assertTrue(handlers.size() == 2);
+    Assertions.assertTrue(handlers.get(0) instanceof HandleEnum2EnumMap);
+  }
+  
   @Test
   public void testStringList() {
     Assertions.assertEquals(before.strings, after.strings);
@@ -54,5 +80,15 @@ public class CollectionTests {
   @Test
   public void testMap() {
     Assertions.assertEquals(before.intMap, after.intMap);
+  }
+  
+  @Test
+  public void testEnumMap() {
+    Assertions.assertEquals(before.facingMap, after.facingMap);
+  }
+  
+  @Test
+  public void testEnum2EnumMap() {
+    Assertions.assertEquals(before.facing2facing, after.facing2facing);
   }
 }
