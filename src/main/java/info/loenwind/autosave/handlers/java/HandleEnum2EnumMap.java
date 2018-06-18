@@ -37,7 +37,7 @@ public class HandleEnum2EnumMap<T extends Enum<T>> extends HandleAbstractMap<Enu
   
   public HandleEnum2EnumMap() throws NoHandlerFoundException {
     super(Registry.GLOBAL_REGISTRY, new Type[0]);
-    this.keyClass = (Class<T>) Enum.class;
+    this.keyClass = (Class<T>) (Class) Enum.class;
     this.keys = (T[]) new Enum[0];
     this.vals = new Enum[0];
     this.valspace = 0;

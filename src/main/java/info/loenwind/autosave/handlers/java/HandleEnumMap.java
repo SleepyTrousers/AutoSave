@@ -17,19 +17,19 @@ import info.loenwind.autosave.util.NullHelper;
 import info.loenwind.autosave.util.TypeUtil;
 import net.minecraft.nbt.NBTTagCompound;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class HandleEnumMap<K extends Enum<K>> extends HandleAbstractMap<EnumMap<K, ?>>{
 
-  private final Class<? extends K> enumClass;
+  private final Class<K> enumClass;
   private final K[] enumValues;
   
   public HandleEnumMap() throws NoHandlerFoundException {
     super(Registry.GLOBAL_REGISTRY, new Type[0]);
-    this.enumClass = (Class<? extends K>) Enum.class;
+    this.enumClass = (Class<K>) (Class) Enum.class;
     this.enumValues = (K[]) new Enum[0];
   }
   
-  protected HandleEnumMap(Registry registry, Class<? extends K> enumClass, Class<?> valueClass) throws NoHandlerFoundException {
+  protected HandleEnumMap(Registry registry, Class<K> enumClass, Class<?> valueClass) throws NoHandlerFoundException {
     super(registry, enumClass, valueClass);
     this.enumClass = enumClass;
     this.enumValues = NullHelper.notnullJ(enumClass.getEnumConstants(), "Class#getEnumConstants");
@@ -83,7 +83,7 @@ public class HandleEnumMap<K extends Enum<K>> extends HandleAbstractMap<EnumMap<
   
   @Override
   protected EnumMap<K, ?> createMap() {
-    return new EnumMap<K, Object>((Class<K>) enumClass);
+    return new EnumMap<>(enumClass);
   }
 
 }
