@@ -25,7 +25,6 @@ import info.loenwind.autosave.handlers.minecraft.HandleBlockPos;
 import info.loenwind.autosave.handlers.minecraft.HandleIBlockState;
 import info.loenwind.autosave.handlers.minecraft.HandleItem;
 import info.loenwind.autosave.handlers.minecraft.HandleItemStack;
-import info.loenwind.autosave.handlers.minecraft.HandleItemStackArray;
 import info.loenwind.autosave.util.NullableType;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -83,7 +82,6 @@ public class Registry {
     } catch (NoHandlerFoundException e) {}
 
     // Minecraft basic types
-    GLOBAL_REGISTRY.register(new HandleItemStackArray());
     GLOBAL_REGISTRY.register(new HandleItemStack());
     GLOBAL_REGISTRY.register(new HandleItem());
     GLOBAL_REGISTRY.register(new HandleBlockPos());

@@ -10,7 +10,6 @@ import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.NBTAction;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class HandleItem implements IHandler<Item> {
@@ -20,7 +19,7 @@ public class HandleItem implements IHandler<Item> {
 
   @Override
   public Class<?> getRootType() {
-    return ItemStack.class;
+    return Item.class;
   }
 
   // Note: We can use the item ID here because ItemStack also uses it in its NBT-methods. So if the ID breaks, ItemStacks break even harder than we do here. 
