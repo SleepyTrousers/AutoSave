@@ -106,7 +106,7 @@ public class HandleEnum2EnumMap<T extends Enum<T>> extends HandleAbstractMap<Enu
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     if (nbt.hasKey(name)) {
       if (object == null) {
-        object = new EnumMap<T, Enum>(keyClass);
+        object = createMap();
       }
       int[] raw = nbt.getIntArray(name);
       if (raw.length == 0) {
