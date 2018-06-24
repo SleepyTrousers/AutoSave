@@ -27,7 +27,7 @@ public class HandleFluid implements IHandler<Fluid> {
   @Override
   public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, Fluid object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    nbt.setString(name, NullHelper.notnullF(FluidRegistry.getFluidName(object), "Fluid " + object + " is missing from fluid registry"));
+    nbt.setString(name, NullHelper.notnullF(FluidRegistry.getDefaultFluidName(object), "FluidRegistry.getDefaultFluidName"));
     return true;
   }
 
