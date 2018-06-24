@@ -9,7 +9,6 @@ import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.NBTAction;
-import info.loenwind.autosave.util.NullHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -27,7 +26,11 @@ public class HandleFluid implements IHandler<Fluid> {
   @Override
   public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, Fluid object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    nbt.setString(name, NullHelper.notnullF(FluidRegistry.getDefaultFluidName(object), "FluidRegistry.getDefaultFluidName"));
+    String fluidName = FluidRegistry.getFluidName(object);
+    if (fluidName == null) {
+      throw new IllegalArgumentException("Can only save a registered and default Fluid object.");
+    }
+    nbt.setString(name, fluidName);
     return true;
   }
 
