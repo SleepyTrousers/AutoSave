@@ -165,7 +165,7 @@ String getCN() {
 
 task mkKeyStore(type:Exec) {
    workingDir projectDir
-   commandLine 'keytool', '-genkey', '-alias', 'signFiles', '-keystore', 'ecstore.jks', '-storepass', '123456', '-noprompt', '-dname', 'CN='+getCN(), '-keypass', '123456'
+   commandLine 'keytool', '-genkey', '-alias', 'signFiles', '-keystore', 'autosavestore.jks', '-storepass', '123456', '-noprompt', '-dname', 'CN='+getCN(), '-keypass', '123456'
 }
 
 task signJar(type: SignJar, dependsOn: reobfJar) {
