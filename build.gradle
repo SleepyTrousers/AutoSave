@@ -109,8 +109,18 @@ publishing {
     }
 
     repositories {
-        if (project.hasProperty('mavendir')) {
-            maven { url mavendir }
+        if (project.hasProperty('maven2_url')) {
+            if (project.hasProperty('maven2_user') && project.hasProperty('maven2_pass')) {
+                maven {
+                    url maven2_url
+                    credentials {
+                        username maven2_user
+                        password maven2_pass
+                    }
+                }
+            } else {
+                maven { url maven2_url }
+            }
         } else {
             mavenLocal()
         }
