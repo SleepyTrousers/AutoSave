@@ -171,7 +171,7 @@ task mkKeyStore(type:Exec) {
 task signJar(type: SignJar, dependsOn: reobfJar) {
     inputFile = jar.archivePath
     outputFile = jar.archivePath
-    keyStore = 'ecstore.jks'
+    keyStore = 'autosavestore.jks'
     alias = 'signFiles'
     storePass = '123456'
     keyPass = '123456'
