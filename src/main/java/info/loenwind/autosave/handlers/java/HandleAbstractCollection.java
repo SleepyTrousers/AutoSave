@@ -60,11 +60,7 @@ public abstract class HandleAbstractCollection<T extends Collection> extends Han
       NBTTagCompound tag = nbt.getCompoundTag(name);
       int size = tag.getInteger("size");
       for (int i = 0; i < size; i++) {
-        if (tag.hasKey(i + "")) {
-          object.add(readRecursive(0, registry, phase, tag, null, i + "", null));
-        } else {
-          object.add(null);
-        }
+        object.add(readRecursive(0, registry, phase, tag, null, i + "", null));
       }
     }
     return object;
