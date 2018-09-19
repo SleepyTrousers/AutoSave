@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
+import info.loenwind.autosave.util.Log;
 import info.loenwind.autosave.util.NBTAction;
 import info.loenwind.autosave.util.NullHelper;
 import info.loenwind.autosave.util.TypeUtil;
@@ -69,6 +70,7 @@ public abstract class HandleGenericType<T> implements IHandler<T> {
       try {
         return create(registry, NullHelper.notnullJ(((ParameterizedType) type).getActualTypeArguments(), "ParameterizedType#getActualTypeArguments"));
       } catch (NoHandlerFoundException e) {
+        Log.LOGGER.error(e);
       } // Fallthrough to return null
     }
 
