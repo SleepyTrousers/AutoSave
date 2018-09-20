@@ -79,7 +79,7 @@ Writer.write(registry, tag, new Wrapper());
 #### Special Cases
 
 - Array types will automatically look for a handler for their component type
-- Supported generic types will do the same (List, Map, etc. See (Java)[#Java])
+- Supported generic types will do the same (List, Map, etc. See [Java](#java))
 
 #### Java
 
