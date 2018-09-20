@@ -4,7 +4,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.annotation.Nonnull;
 
@@ -29,17 +28,12 @@ public class CollectionTests {
   private static class Holder {
 
     public @Store List<String> strings;
-    public @Store CopyOnWriteArrayList<String> copyStrings;
     public @Store Map<String, Integer> intMap;
     public @Store EnumMap<EnumFacing, String> facingMap;
     public @Store EnumMap<EnumFacing, EnumFacing> facing2facing;
 
     void fill() {
       strings = Lists.newArrayList("foo", "bar");
-      
-      copyStrings = new CopyOnWriteArrayList<>();
-      copyStrings.add("bar");
-      copyStrings.add("baz");
       
       intMap = new HashMap<>();
       intMap.put("foo", 123);
@@ -81,11 +75,6 @@ public class CollectionTests {
   @Test
   public void testStringList() {
     Assertions.assertEquals(before.strings, after.strings);
-  }
-  
-  @Test
-  public void testCopyOnWriteStringList() {
-    Assertions.assertEquals(before.copyStrings, after.copyStrings);
   }
 
   @Test
