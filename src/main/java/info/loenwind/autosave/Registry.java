@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import info.loenwind.autosave.annotations.Storable;
@@ -45,7 +46,7 @@ public class Registry {
    * You can register new handlers here if you want other mods to be able to store your objects. Otherwise please use your own registry.
    */
   
-  public static final Registry GLOBAL_REGISTRY = new Registry(true);
+  public static final @Nonnull Registry GLOBAL_REGISTRY = new Registry(true);
 
   static {
     // Java primitives

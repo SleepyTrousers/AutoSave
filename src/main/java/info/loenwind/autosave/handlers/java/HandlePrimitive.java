@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import info.loenwind.autosave.Registry;
@@ -30,10 +31,10 @@ public class HandlePrimitive<T> implements IHandler<T> {
   private final T defaultValue;
   
   private final @Nullable Class<?> primitiveClass;
-  private final Class<?> boxedClass;
+  private final @Nonnull Class<?> boxedClass;
   
-  private final WriterFunc<T> writer;
-  private final ReaderFunc<T> reader;
+  private final @Nonnull WriterFunc<T> writer;
+  private final @Nonnull ReaderFunc<T> reader;
   
   public HandlePrimitive(T defVal, Class<T> boxedClass, @Nullable Class<?> primitiveClass, WriterFunc<T> writer, ReaderFunc<T> reader) {
     this.defaultValue = defVal;

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import info.loenwind.autosave.Reader;
@@ -51,14 +52,14 @@ public class StorableEngine {
     }
   };
 
-  public static final String NULL_POSTFIX = "-";
-  public static final String EMPTY_POSTFIX = "+";
-  public static final String SUPERCLASS_KEY = "__superclass";
-  private final Map<Class<?>, List<Field>> fieldCache = new HashMap<Class<?>, List<Field>>();
-  private final Map<Field, Set<NBTAction>> phaseCache = new HashMap<Field, Set<NBTAction>>();
-  private final Map<Field, List<IHandler>> fieldHandlerCache = new HashMap<Field, List<IHandler>>();
-  private final Map<Class<?>, Class<?>> superclassCache = new HashMap<Class<?>, Class<?>>();
-  private final Map<Class<?>, List<IHandler>> superclassHandlerCache = new HashMap<Class<?>, List<IHandler>>();
+  public static final @Nonnull String NULL_POSTFIX = "-";
+  public static final @Nonnull String EMPTY_POSTFIX = "+";
+  public static final @Nonnull String SUPERCLASS_KEY = "__superclass";
+  private final @Nonnull Map<Class<?>, List<Field>> fieldCache = new HashMap<Class<?>, List<Field>>();
+  private final @Nonnull Map<Field, Set<NBTAction>> phaseCache = new HashMap<Field, Set<NBTAction>>();
+  private final @Nonnull Map<Field, List<IHandler>> fieldHandlerCache = new HashMap<Field, List<IHandler>>();
+  private final @Nonnull Map<Class<?>, Class<?>> superclassCache = new HashMap<Class<?>, Class<?>>();
+  private final @Nonnull Map<Class<?>, List<IHandler>> superclassHandlerCache = new HashMap<Class<?>, List<IHandler>>();
 
   private StorableEngine() {
   }
