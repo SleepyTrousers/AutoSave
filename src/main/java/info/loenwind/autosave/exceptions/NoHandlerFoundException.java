@@ -20,4 +20,8 @@ public class NoHandlerFoundException extends Exception {
   public NoHandlerFoundException(Type type, String name, @Nullable Exception e) {
     super("No storage handler found for field " + name + " of type " + type, e);
   }
+
+  public NoHandlerFoundException(String msg) {
+    super(msg);
+  }
 }

@@ -200,8 +200,14 @@ public class StorableEngine {
         String fieldName = field.getName();
         if (fieldName != null) {
           Type fieldType = NullHelper.notnullJ(field.getGenericType(), "Field#getGenericType");
-          if (annotation.handler() != NullHandler.class) {
-            handlerList.add(annotation.handler().newInstance());
+          Class<? extends IHandler> handlerClass = annotation.handler();
+          if (handlerClass != NullHandler.class) {
+            IHandler handler = handlerClass.newInstance().getHandler(registry, fieldType);
+            if (handler != null) {
+              handlerList.add(handler);
+            } else {
+              throw new NoHandlerFoundException("Handler specified in annotation on " + field + " does not apply to " + fieldType + ".");
+            }
           }
           handlerList.addAll(registry.findHandlers(fieldType));
           if (handlerList.isEmpty()) {
