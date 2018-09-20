@@ -74,4 +74,33 @@ NBTTagCompound tag = new NBTTagCompound();
 Writer.write(registry, tag, new Wrapper());
 ```
 
-##### For more information, refer to the javadocs.
+### Out-of-the-box Supported Types
+
+#### Special Cases
+
+- Array types will automatically look for a handler for their component type
+- Supported generic types will do the same (List, Map, etc. See (Java)[#Java])
+
+#### Java
+
+- All primitive types
+- String
+- Enum
+- List (ArrayList)
+- Map (HashMap)
+- EnumMap
+- Enum2EnumMap (Not a class, but a special case of EnumMap where the data is packed more efficiently)
+
+#### Minecraft
+
+- BlockPos
+- IBlockState
+- Item
+- ItemStack
+
+#### Forge
+
+- Fluid
+- FluidStack
+
+<h5>For more information, refer to the javadocs.</h5>
