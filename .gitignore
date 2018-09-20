@@ -39,3 +39,5 @@ externalannotations/\.DS_Store
 gradle/\.DS_Store
 
 \.DS_Store
+
+*.jks
