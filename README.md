@@ -83,7 +83,7 @@ Writer.write(registry, tag, new Wrapper());
 
 #### Java
 
-- All primitive types
+- All primitive types (including boxed types)
 - String
 - Enum
 - List (ArrayList)
