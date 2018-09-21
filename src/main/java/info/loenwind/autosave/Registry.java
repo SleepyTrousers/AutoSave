@@ -2,10 +2,13 @@ package info.loenwind.autosave;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import info.loenwind.autosave.annotations.Storable;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
@@ -18,7 +21,6 @@ import info.loenwind.autosave.handlers.java.HandleArrays;
 import info.loenwind.autosave.handlers.java.HandleEnum;
 import info.loenwind.autosave.handlers.java.HandleEnum2EnumMap;
 import info.loenwind.autosave.handlers.java.HandleEnumMap;
-import info.loenwind.autosave.handlers.java.HandleFloatArray;
 import info.loenwind.autosave.handlers.java.HandleHashMap;
 import info.loenwind.autosave.handlers.java.HandlePrimitive;
 import info.loenwind.autosave.handlers.java.HandleString;
@@ -26,6 +28,7 @@ import info.loenwind.autosave.handlers.minecraft.HandleBlockPos;
 import info.loenwind.autosave.handlers.minecraft.HandleIBlockState;
 import info.loenwind.autosave.handlers.minecraft.HandleItem;
 import info.loenwind.autosave.handlers.minecraft.HandleItemStack;
+import info.loenwind.autosave.util.DelegatingHandler;
 import info.loenwind.autosave.util.NullableType;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -62,13 +65,108 @@ public class Registry {
     GLOBAL_REGISTRY.register(new HandleEnum());
     GLOBAL_REGISTRY.register(new HandleString());
     
-    // Simple array handlers
-    GLOBAL_REGISTRY.register(new HandlePrimitive<int @NullableType[]>(new int[0], int[].class, null, NBTTagCompound::setIntArray, NBTTagCompound::getIntArray));
-    GLOBAL_REGISTRY.register(new HandlePrimitive<byte @NullableType[]>(new byte[0], byte[].class, null, NBTTagCompound::setByteArray, NBTTagCompound::getByteArray));
+    // Primitive array handlers
     
-    // Special case array handlers
-    // TODO make a generic version of this for the remaining primitive array types that NBT does not natively support
-    GLOBAL_REGISTRY.register(new HandleFloatArray());
+    // byte/Byte
+    IHandler<byte[]> byteArrayHandler = new HandlePrimitive<byte @NullableType[]>(new byte[0], byte[].class, null, NBTTagCompound::setByteArray, NBTTagCompound::getByteArray);
+    GLOBAL_REGISTRY.register(byteArrayHandler);
+    GLOBAL_REGISTRY.register(new DelegatingHandler<>(Byte[].class, byteArrayHandler, ArrayUtils::toPrimitive, ArrayUtils::toObject));
+    
+    // int/Integer
+    IHandler<int[]> intArrayHandler = new HandlePrimitive<int @NullableType[]>(new int[0], int[].class, null, NBTTagCompound::setIntArray, NBTTagCompound::getIntArray);
+    GLOBAL_REGISTRY.register(intArrayHandler);
+    GLOBAL_REGISTRY.register(new DelegatingHandler<>(Integer[].class, intArrayHandler, ArrayUtils::toPrimitive, ArrayUtils::toObject));
+    
+    // The rest are packed into int[]
+    
+    // short/Short
+    IHandler<short[]> shortArrayHandler = new HandlePrimitive<short @NullableType[]>(new short[0], short[].class, null, 
+        (nbt, name, arr) -> {
+          int[] ret = new int[arr.length];
+          for (int i = 0; i < ret.length; i++) {
+            ret[i] = (int) arr[i];
+          }
+          nbt.setIntArray(name, ret);
+        },
+        (nbt, name) -> {
+          int[] read = nbt.getIntArray(name);
+          short[] ret = new short[read.length];
+          for (int i = 0; i < ret.length; i++) {
+            ret[i] = (short) read[i];
+          }
+          return ret;
+        });
+    GLOBAL_REGISTRY.register(shortArrayHandler);
+    GLOBAL_REGISTRY.register(new DelegatingHandler<>(Short[].class, shortArrayHandler, ArrayUtils::toPrimitive, ArrayUtils::toObject));
+    
+    // char/Character
+    IHandler<char[]> charArrayHandler = new HandlePrimitive<char @NullableType[]>(new char[0], char[].class, null,
+        (nbt, name, arr) -> {
+          int[] ret = new int[arr.length];
+          for (int i = 0; i < ret.length; i++) {
+            ret[i] = (int) arr[i];
+          }
+          nbt.setIntArray(name, ret);
+        },
+        (nbt, name) -> {
+          int[] read = nbt.getIntArray(name);
+          char[] ret = new char[read.length];
+          for (int i = 0; i < ret.length; i++) {
+            ret[i] = (char) read[i];
+          }
+          return ret;
+        });
+    GLOBAL_REGISTRY.register(charArrayHandler);
+    GLOBAL_REGISTRY.register(new DelegatingHandler<>(Character[].class, charArrayHandler, ArrayUtils::toPrimitive, ArrayUtils::toObject));
+    
+    // float/Float
+    IHandler<float[]> floatArrayHandler = new HandlePrimitive<float @NullableType[]>(new float[0], float[].class, null,
+        (nbt, name, arr) -> {
+          int[] ret = new int[arr.length];
+          for (int i = 0; i < ret.length; i++) {
+            ret[i] = Float.floatToIntBits(arr[i]);
+          }
+          nbt.setIntArray(name, ret);
+        },
+        (nbt, name) -> {
+          int[] read = nbt.getIntArray(name);
+          float[] ret = new float[read.length];
+          for (int i = 0; i < ret.length; i++) {
+            ret[i] = Float.intBitsToFloat(read[i]);
+          }
+          return ret;
+        });
+    GLOBAL_REGISTRY.register(floatArrayHandler);
+    GLOBAL_REGISTRY.register(new DelegatingHandler<>(Float[].class, floatArrayHandler, ArrayUtils::toPrimitive, ArrayUtils::toObject));
+    
+    // long/Long
+    IHandler<long[]> longArrayHandler = new HandlePrimitive<long @NullableType[]>(new long[0], long[].class, null, 
+        (nbt, name, arr) -> {
+          int[] ret = new int[arr.length * 2];
+          for (int i = 0; i < arr.length; i++) {
+            ret[i * 2] = (int) (arr[i] >>> 32);
+            ret[i * 2 + 1] = (int) (arr[i] & 0xFFFFFFFFL);
+          }
+          nbt.setIntArray(name, ret);
+        },
+        (nbt, name) -> {
+          int[] read = nbt.getIntArray(name);
+          long[] ret = new long[read.length / 2];
+          for (int i = 0; i < ret.length; i++) {
+            ret[i] = (Integer.toUnsignedLong(read[i * 2]) << 32) | Integer.toUnsignedLong(read[i * 2 + 1]);
+          }
+          return ret;
+        });
+    GLOBAL_REGISTRY.register(longArrayHandler);
+    GLOBAL_REGISTRY.register(new DelegatingHandler<>(Long[].class, longArrayHandler, ArrayUtils::toPrimitive, ArrayUtils::toObject));
+    
+    // double/Double
+    // Reuse the long[] handler since we can just stream convert
+    IHandler<double[]> doubleArrayHandler = new DelegatingHandler<>(double[].class, longArrayHandler,
+        (doubleArr) -> doubleArr == null ? null : Arrays.stream(doubleArr).mapToLong(d -> Double.doubleToLongBits(d)).toArray(),
+        (longArr)   -> longArr == null ? null :   Arrays.stream(longArr).mapToDouble(l -> Double.longBitsToDouble(l)).toArray());
+    GLOBAL_REGISTRY.register(doubleArrayHandler);
+    GLOBAL_REGISTRY.register(new DelegatingHandler<>(Double[].class, doubleArrayHandler, ArrayUtils::toPrimitive, ArrayUtils::toObject));
     
     // Fallback array handler
     GLOBAL_REGISTRY.register(new HandleArrays());
@@ -95,7 +193,6 @@ public class Registry {
     // Annotated objects
     GLOBAL_REGISTRY.register(new HandleStorable<Object>());
   }
-
   
   private final List<IHandler> handlers = new ArrayList<IHandler>();
   @Nullable
