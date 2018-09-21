@@ -28,6 +28,7 @@ import info.loenwind.autosave.handlers.java.HandleHashSet;
 import info.loenwind.autosave.handlers.java.HandlePrimitive;
 import info.loenwind.autosave.handlers.java.HandleString;
 import info.loenwind.autosave.handlers.java.util.HandleSimpleCollection;
+import info.loenwind.autosave.handlers.minecraft.HandleBlock;
 import info.loenwind.autosave.handlers.minecraft.HandleBlockPos;
 import info.loenwind.autosave.handlers.minecraft.HandleIBlockState;
 import info.loenwind.autosave.handlers.minecraft.HandleItem;
@@ -36,6 +37,7 @@ import info.loenwind.autosave.handlers.util.DelegatingHandler;
 import info.loenwind.autosave.util.BitUtil;
 import info.loenwind.autosave.util.NullableType;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 
 /**
  * A registry for {@link IHandler}s.
@@ -168,8 +170,8 @@ public class Registry {
     // double/Double
     // Reuse the long[] handler since we can just stream convert
     IHandler<double[]> doubleArrayHandler = new DelegatingHandler<>(double[].class, longArrayHandler,
-        (doubleArr) -> doubleArr == null ? null : Arrays.stream(doubleArr).mapToLong(d -> Double.doubleToLongBits(d)).toArray(),
-        (longArr)   -> longArr == null ? null :   Arrays.stream(longArr).mapToDouble(l -> Double.longBitsToDouble(l)).toArray());
+        (doubleArr) -> Arrays.stream(doubleArr).mapToLong(d -> Double.doubleToLongBits(d)).toArray(),
+        (longArr)   -> Arrays.stream(longArr).mapToDouble(l -> Double.longBitsToDouble(l)).toArray());
     GLOBAL_REGISTRY.register(doubleArrayHandler);
     GLOBAL_REGISTRY.register(new DelegatingHandler<>(Double[].class, doubleArrayHandler, ArrayUtils::toPrimitive, ArrayUtils::toObject));
     
@@ -196,7 +198,9 @@ public class Registry {
     GLOBAL_REGISTRY.register(new HandleItemStack());
     GLOBAL_REGISTRY.register(new HandleItem());
     GLOBAL_REGISTRY.register(new HandleBlockPos());
+    GLOBAL_REGISTRY.register(new HandleBlock());
     GLOBAL_REGISTRY.register(new HandleIBlockState());
+    GLOBAL_REGISTRY.register(new DelegatingHandler<>(ResourceLocation.class, new HandleString(), ResourceLocation::toString, ResourceLocation::new));
 
     // Forge basic types
     GLOBAL_REGISTRY.register(new HandleFluidStack());

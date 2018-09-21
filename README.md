@@ -87,6 +87,7 @@ Writer.write(registry, tag, new Wrapper());
 - String
 - Enum
 - List (ArrayList)
+- LinkedList
 - Set (HashSet)
 - Map (HashMap)
 - EnumMap
@@ -95,9 +96,11 @@ Writer.write(registry, tag, new Wrapper());
 #### Minecraft
 
 - BlockPos
+- Block
 - IBlockState
 - Item
 - ItemStack
+- ResourceLocation
 
 #### Forge
 

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import info.loenwind.autosave.Reader;
 import info.loenwind.autosave.Writer;
 import info.loenwind.autosave.annotations.Store;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -21,6 +22,7 @@ import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
 public class MinecraftTests {
@@ -28,9 +30,11 @@ public class MinecraftTests {
   private static class Holder {
 
     public @Store BlockPos pos;
+    public @Store Block block;
     public @Store IBlockState state;
     public @Store Item item;
     public @Store ItemStack stack;
+    public @Store ResourceLocation resloc;
     
     // Verify arrays/collections work with MC objects
     public @Store ItemStack[] stackArray;
@@ -38,11 +42,11 @@ public class MinecraftTests {
 
     void fill() {
       pos = new BlockPos(867, 5, 309);
+      block = Blocks.BEDROCK;
       state = Blocks.WOOL.getDefaultState().withProperty(BlockColored.COLOR, EnumDyeColor.PURPLE);
       item = Items.APPLE;
       stack = new ItemStack(Items.GOLDEN_APPLE, 32, 1);
-      NBTTagCompound tag = stack.getOrCreateSubCompound("test_data");
-      tag.setLong("test", 334095848957348569L);
+      resloc = new ResourceLocation("fancy", "strings");
       
       stackArray = new ItemStack[] { new ItemStack(Items.BEEF), new ItemStack(Items.FISH, 1, 2), new ItemStack(Items.MUTTON) };
       stackList = Arrays.asList(stackArray);
@@ -67,10 +71,20 @@ public class MinecraftTests {
   public void testBlockPos() {
     Assertions.assertEquals(before.pos, after.pos);
   }
+  
+  @Test
+  public void testBlock() {
+    Assertions.assertSame(before.block, after.block);
+  }
 
   @Test
   public void testBlockState() {
     Assertions.assertSame(before.state, after.state);
+  }
+  
+  @Test
+  public void testResourceLocation() {
+    Assertions.assertEquals(before.resloc, after.resloc);
   }
 
   @Test

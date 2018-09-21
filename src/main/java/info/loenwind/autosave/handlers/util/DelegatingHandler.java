@@ -11,6 +11,7 @@ import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.NBTAction;
+import info.loenwind.autosave.util.NonnullType;
 import info.loenwind.autosave.util.TypeUtil;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -18,18 +19,18 @@ public class DelegatingHandler<T, R> implements IHandler<T> {
   
   private final @Nonnull Type type;
   private final @Nonnull IHandler<R> delegate;
-  private final @Nonnull Function<T, R> storeConverter;
-  private final @Nonnull Function<R, T> readConverter;
+  private final @Nonnull Function<@NonnullType T, R> storeConverter;
+  private final @Nonnull Function<@NonnullType R, T> readConverter;
   
   /**
    * This exists to make javac happy in cases where T might not be strongly
    * bound by the function parameters.
    */
-  public DelegatingHandler(Class<T> type, IHandler<R> delegate, Function<T, R> storeConverter, Function<R, T> readConverter) {
+  public DelegatingHandler(Class<T> type, IHandler<R> delegate, Function<@NonnullType T, R> storeConverter, Function<@NonnullType R, T> readConverter) {
     this((Type) type, delegate, storeConverter, readConverter);
   }
 
-  public DelegatingHandler(Type type, IHandler<R> delegate, Function<T, R> storeConverter, Function<R, T> readConverter) {
+  public DelegatingHandler(Type type, IHandler<R> delegate, Function<@NonnullType T, R> storeConverter, Function<@NonnullType R, T> readConverter) {
     this.type = type;
     this.delegate = delegate;
     this.storeConverter = storeConverter;
@@ -55,6 +56,7 @@ public class DelegatingHandler<T, R> implements IHandler<T> {
   @Nullable
   public T read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, @Nullable T object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    return readConverter.apply(delegate.read(registry, phase, nbt, type, name, storeConverter.apply(object)));
+    R intermediate = delegate.read(registry, phase, nbt, type, name, object == null ? null : storeConverter.apply(object));
+    return intermediate == null ? null : readConverter.apply(intermediate);
   }
 }
