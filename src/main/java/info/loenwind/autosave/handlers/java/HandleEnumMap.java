@@ -11,6 +11,7 @@ import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.engine.StorableEngine;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
+import info.loenwind.autosave.handlers.java.util.HandleMap;
 import info.loenwind.autosave.util.NBTAction;
 import info.loenwind.autosave.util.NonnullType;
 import info.loenwind.autosave.util.NullHelper;
@@ -18,28 +19,23 @@ import info.loenwind.autosave.util.TypeUtil;
 import net.minecraft.nbt.NBTTagCompound;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class HandleEnumMap<K extends Enum<K>> extends HandleAbstractMap<EnumMap<K, ?>>{
+public class HandleEnumMap<K extends Enum<K>> extends HandleMap<EnumMap<K, ?>>{
 
   private final Class<K> enumClass;
   private final K[] enumValues;
   
   public HandleEnumMap() throws NoHandlerFoundException {
-    super(Registry.GLOBAL_REGISTRY, new Type[0]);
+    super((Class<? extends EnumMap<K, ?>>) EnumMap.class);
     this.enumClass = (Class<K>) (Class) Enum.class;
     this.enumValues = (K[]) new Enum[0];
   }
   
   protected HandleEnumMap(Registry registry, Class<K> enumClass, Class<?> valueClass) throws NoHandlerFoundException {
-    super(registry, enumClass, valueClass);
+    super((Class<? extends EnumMap<K, ?>>) EnumMap.class, registry, enumClass, valueClass);
     this.enumClass = enumClass;
     this.enumValues = NullHelper.notnullJ(enumClass.getEnumConstants(), "Class#getEnumConstants");
   }
 
-  @Override
-  public Class<?> getRootType() {
-    return EnumMap.class;
-  }
-  
   @Override
   protected IHandler<? extends EnumMap<K, ?>> create(Registry registry, @NonnullType Type... types) throws NoHandlerFoundException {
     return new HandleEnumMap<K>(registry, (Class<K>) TypeUtil.toClass(types[0]), TypeUtil.toClass(types[1]));

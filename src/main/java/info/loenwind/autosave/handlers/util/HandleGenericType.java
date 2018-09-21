@@ -1,4 +1,4 @@
-package info.loenwind.autosave.handlers.java;
+package info.loenwind.autosave.handlers.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -6,6 +6,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import info.loenwind.autosave.Registry;
@@ -13,6 +14,7 @@ import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.Log;
 import info.loenwind.autosave.util.NBTAction;
+import info.loenwind.autosave.util.NonnullType;
 import info.loenwind.autosave.util.NullHelper;
 import info.loenwind.autosave.util.TypeUtil;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,18 +22,27 @@ import net.minecraft.nbt.NBTTagCompound;
 @SuppressWarnings("rawtypes")
 public abstract class HandleGenericType<T> implements IHandler<T> {
   
-  @SuppressWarnings("unchecked")
-  protected final List<IHandler>[] subHandlers = (List<IHandler>[]) new List[getRequiredParameters()];
+  protected final @Nonnull Class<? extends T> clazz;
+  
+  protected final @NonnullType Type[] types;
+  protected final List<IHandler>[] subHandlers;
 
-  protected HandleGenericType(Registry registry, Type... parameterTypes) throws NoHandlerFoundException {
+  @SuppressWarnings("unchecked")
+  protected HandleGenericType(Class<? extends T> clazz, Registry registry, Type... parameterTypes) throws NoHandlerFoundException {
+    this.clazz = clazz;
+    this.types = new Type[getRequiredParameters()];
+    this.subHandlers = (List<IHandler>[]) new List[getRequiredParameters()];
+
     if (parameterTypes.length == 0) {
       return;
     }
     if (parameterTypes.length != getRequiredParameters()) {
       throw new IllegalArgumentException("Mismatch of parameter count. Required: " + getRequiredParameters() + "  Found: " + parameterTypes.length);
     }
+
     for (int i = 0; i < getRequiredParameters(); i++) {
       Type type = parameterTypes[i];
+      types[i] = type; // Shallow copy
       if (type == null) {
         throw new IllegalArgumentException("Null type passed to HandleGenericType()");
       }
@@ -48,7 +59,9 @@ public abstract class HandleGenericType<T> implements IHandler<T> {
   }
   
   @Override
-  public abstract Class<?> getRootType();
+  public final Class<?> getRootType() {
+    return clazz;
+  }
   
   protected abstract IHandler<? extends T> create(Registry registry, Type... types) throws NoHandlerFoundException;
   

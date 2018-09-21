@@ -1,4 +1,4 @@
-package info.loenwind.autosave.handlers.java;
+package info.loenwind.autosave.handlers.java.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -11,23 +11,23 @@ import javax.annotation.Nullable;
 import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.engine.StorableEngine;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
+import info.loenwind.autosave.handlers.util.HandleGenericType;
 import info.loenwind.autosave.util.NBTAction;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class HandleAbstractMap<T extends Map> extends HandleGenericType<T> {
-
-  protected HandleAbstractMap(Registry registry, Type... types) throws NoHandlerFoundException {
-    super(registry, types);
+public abstract class HandleMap<T extends Map> extends HandleGenericType<T> {
+  
+  protected HandleMap(Class<? extends T> clazz) throws NoHandlerFoundException {
+    this(clazz, Registry.GLOBAL_REGISTRY, new Type[0]);
   }
 
-  @Override
-  public Class<?> getRootType() {
-    return Map.class;
+  protected HandleMap(Class<? extends T> clazz, Registry registry, Type... types) throws NoHandlerFoundException {
+    super(clazz, registry, types);
   }
-
+  
   @Override
   public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, T object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {

@@ -1,7 +1,9 @@
 package info.loenwind.autosave.test;
 
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,20 +32,24 @@ public class CollectionTests {
   private static class Holder {
 
     public @Store List<String> strings;
-    public @Store Map<String, Integer> intMap;
+    public @Store LinkedList<String> linkedListStrings;
+
     public @Store Set<String> stringSet;
+    
+    public @Store Map<String, Integer> intMap;
     public @Store EnumMap<EnumFacing, String> facingMap;
     public @Store EnumMap<EnumFacing, EnumFacing> facing2facing;
 
     void fill() {
       strings = Lists.newArrayList("foo", "bar");
+      linkedListStrings = Lists.newLinkedList(strings);
       
       intMap = new HashMap<>();
       intMap.put("foo", 123);
       intMap.put("bar", 456);
       
       stringSet = Sets.newHashSet("unique", "elements", "only");
-      
+            
       facingMap = new EnumMap<>(EnumFacing.class);
       facingMap.put(EnumFacing.UP, "up");
       facingMap.put(EnumFacing.DOWN, "down");
@@ -80,6 +86,11 @@ public class CollectionTests {
   @Test
   public void testStringList() {
     Assertions.assertEquals(before.strings, after.strings);
+  }
+  
+  @Test
+  public void testStringLinkedList() {
+    Assertions.assertEquals(before.linkedListStrings, before.linkedListStrings);
   }
   
   @Test

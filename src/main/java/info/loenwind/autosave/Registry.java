@@ -3,6 +3,7 @@ package info.loenwind.autosave;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -21,16 +22,18 @@ import info.loenwind.autosave.handlers.java.HandleArrays;
 import info.loenwind.autosave.handlers.java.HandleEnum;
 import info.loenwind.autosave.handlers.java.HandleEnum2EnumMap;
 import info.loenwind.autosave.handlers.java.HandleEnumMap;
+import info.loenwind.autosave.handlers.java.HandleEnumSet;
 import info.loenwind.autosave.handlers.java.HandleHashMap;
 import info.loenwind.autosave.handlers.java.HandleHashSet;
 import info.loenwind.autosave.handlers.java.HandlePrimitive;
 import info.loenwind.autosave.handlers.java.HandleString;
+import info.loenwind.autosave.handlers.java.util.HandleSimpleCollection;
 import info.loenwind.autosave.handlers.minecraft.HandleBlockPos;
 import info.loenwind.autosave.handlers.minecraft.HandleIBlockState;
 import info.loenwind.autosave.handlers.minecraft.HandleItem;
 import info.loenwind.autosave.handlers.minecraft.HandleItemStack;
+import info.loenwind.autosave.handlers.util.DelegatingHandler;
 import info.loenwind.autosave.util.BitUtil;
-import info.loenwind.autosave.util.DelegatingHandler;
 import info.loenwind.autosave.util.NullableType;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -175,8 +178,12 @@ public class Registry {
     
     // Collections
     try {
+      // List/ArrayList
       GLOBAL_REGISTRY.register(new HandleArrayList());
+      // LinkedList
+      GLOBAL_REGISTRY.register(new HandleSimpleCollection<>(LinkedList.class, LinkedList::new));
       
+      // Set/HashSet
       GLOBAL_REGISTRY.register(new HandleHashSet());
 
       GLOBAL_REGISTRY.register(new HandleHashMap());

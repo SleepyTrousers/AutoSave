@@ -7,17 +7,18 @@ import java.util.List;
 import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
+import info.loenwind.autosave.handlers.java.util.HandleCollection;
 import info.loenwind.autosave.util.TypeUtil;
 
 @SuppressWarnings("rawtypes")
-public class HandleArrayList extends HandleAbstractCollection<ArrayList> {
+public class HandleArrayList extends HandleCollection<ArrayList> {
   
   public HandleArrayList() throws NoHandlerFoundException {
     this(Registry.GLOBAL_REGISTRY, new Type[0]);
   }
 
   protected HandleArrayList(Registry registry, Type... types) throws NoHandlerFoundException {
-    super(registry, types);
+    super(ArrayList.class, registry, types);
   }
 
   @Override
@@ -28,11 +29,6 @@ public class HandleArrayList extends HandleAbstractCollection<ArrayList> {
   @Override
   protected boolean canHandle(Type type) {
     return TypeUtil.toClass(type) == List.class || super.canHandle(type);
-  }
-  
-  @Override
-  public Class<?> getRootType() {
-    return ArrayList.class;
   }
 
   @Override

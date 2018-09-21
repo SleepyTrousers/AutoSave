@@ -1,4 +1,4 @@
-package info.loenwind.autosave.util;
+package info.loenwind.autosave.handlers.util;
 
 import java.lang.reflect.Field;
 import java.util.Set;
@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
+import info.loenwind.autosave.util.NBTAction;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class DelegatingHandler<T, R> implements IHandler<T> {

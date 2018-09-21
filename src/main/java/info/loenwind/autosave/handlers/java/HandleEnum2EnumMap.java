@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
+import info.loenwind.autosave.handlers.java.util.HandleMap;
 import info.loenwind.autosave.util.BitUtil;
 import info.loenwind.autosave.util.Log;
 import info.loenwind.autosave.util.NBTAction;
@@ -28,7 +29,7 @@ import net.minecraft.nbt.NBTTagCompound;
  *
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class HandleEnum2EnumMap<T extends Enum<T>> extends HandleAbstractMap<EnumMap<T, Enum>> {
+public class HandleEnum2EnumMap<T extends Enum<T>> extends HandleMap<EnumMap<T, Enum>> {
   
   private final Class<T> keyClass;
   private final T[] keys;
@@ -37,7 +38,7 @@ public class HandleEnum2EnumMap<T extends Enum<T>> extends HandleAbstractMap<Enu
   private final int valspace;
   
   public HandleEnum2EnumMap() throws NoHandlerFoundException {
-    super(Registry.GLOBAL_REGISTRY, new Type[0]);
+    super((Class<? extends EnumMap<T, Enum>>) EnumMap.class);
     this.keyClass = (Class<T>) (Class) Enum.class;
     this.keys = (T[]) new Enum[0];
     this.vals = new Enum[0];
@@ -45,7 +46,7 @@ public class HandleEnum2EnumMap<T extends Enum<T>> extends HandleAbstractMap<Enu
   }
 
   protected HandleEnum2EnumMap(Registry registry, Class<? extends Enum> keyClass, Class<? extends Enum> valClass) throws NoHandlerFoundException {
-    super(registry, keyClass, valClass);
+    super((Class<? extends EnumMap<T, Enum>>) EnumMap.class, registry, keyClass, valClass);
     this.keyClass = (Class<T>) keyClass;
     this.keys = (T[]) getEnumConstants(keyClass);
     this.vals = getEnumConstants(valClass);
@@ -70,11 +71,6 @@ public class HandleEnum2EnumMap<T extends Enum<T>> extends HandleAbstractMap<Enu
     return new EnumMap<>(keyClass);
   }
 
-  @Override
-  public Class<?> getRootType() {
-    return EnumMap.class;
-  }
-  
   @Override
   public boolean canHandle(Type type) {
     if (super.canHandle(type) && type instanceof ParameterizedType) {

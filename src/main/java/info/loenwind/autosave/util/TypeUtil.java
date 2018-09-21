@@ -1,7 +1,10 @@
 package info.loenwind.autosave.util;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.function.Supplier;
 
 public class TypeUtil {
 
@@ -29,6 +32,22 @@ public class TypeUtil {
    */
   public static boolean isAssignable(Class<?> clazz, Type type) {
     return clazz.isAssignableFrom(toClass(type));
+  }
+  
+  public static <T> Supplier<T> defaultConstructorFactory(Class<T> clazz) {
+    MethodHandle handle;
+    try {
+      handle = MethodHandles.lookup().unreflectConstructor(clazz.getConstructor());
+    } catch (IllegalAccessException | NoSuchMethodException | SecurityException e) {
+      throw new RuntimeException(e);
+    }
+    return () -> {
+      try {
+        return (T) handle.invokeExact();
+      } catch (Throwable e) {
+        throw new RuntimeException(e);
+      }
+    };
   }
 
 }
