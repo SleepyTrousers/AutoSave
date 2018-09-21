@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
@@ -37,6 +38,7 @@ public class HandleSimpleCollection<T extends Collection> extends HandleCollecti
   }
 
   @Override
+  @Nullable
   protected IHandler<? extends T> create(Registry registry, Type... types) throws NoHandlerFoundException {
     return new HandleSimpleCollection<>(clazz, factory, registry, types);
   }

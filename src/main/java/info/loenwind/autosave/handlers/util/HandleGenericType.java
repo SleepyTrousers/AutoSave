@@ -62,7 +62,7 @@ public abstract class HandleGenericType<T> implements IHandler<T> {
     return clazz;
   }
   
-  protected abstract IHandler<? extends T> create(Registry registry, Type... types) throws NoHandlerFoundException;
+  protected abstract @Nullable IHandler<? extends T> create(Registry registry, Type... types) throws NoHandlerFoundException;
   
   protected int getRequiredParameters() {
     return getRootType().getTypeParameters().length;
