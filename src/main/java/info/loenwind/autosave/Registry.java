@@ -28,6 +28,7 @@ import info.loenwind.autosave.handlers.minecraft.HandleBlockPos;
 import info.loenwind.autosave.handlers.minecraft.HandleIBlockState;
 import info.loenwind.autosave.handlers.minecraft.HandleItem;
 import info.loenwind.autosave.handlers.minecraft.HandleItemStack;
+import info.loenwind.autosave.util.BitUtil;
 import info.loenwind.autosave.util.DelegatingHandler;
 import info.loenwind.autosave.util.NullableType;
 import net.minecraft.nbt.NBTTagCompound;
@@ -144,8 +145,8 @@ public class Registry {
         (nbt, name, arr) -> {
           int[] ret = new int[arr.length * 2];
           for (int i = 0; i < arr.length; i++) {
-            ret[i * 2] = (int) (arr[i] >>> 32);
-            ret[i * 2 + 1] = (int) (arr[i] & 0xFFFFFFFFL);
+            ret[i * 2] = BitUtil.getLongMSB(arr[i]);
+            ret[i * 2 + 1] = BitUtil.getLongLSB(arr[i]);
           }
           nbt.setIntArray(name, ret);
         },
@@ -153,7 +154,7 @@ public class Registry {
           int[] read = nbt.getIntArray(name);
           long[] ret = new long[read.length / 2];
           for (int i = 0; i < ret.length; i++) {
-            ret[i] = (Integer.toUnsignedLong(read[i * 2]) << 32) | Integer.toUnsignedLong(read[i * 2 + 1]);
+            ret[i] = BitUtil.longFromInts(read[i * 2], read[i * 2 + 1]);
           }
           return ret;
         });

@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
+import info.loenwind.autosave.util.BitUtil;
 import info.loenwind.autosave.util.Log;
 import info.loenwind.autosave.util.NBTAction;
 import info.loenwind.autosave.util.NonnullType;
@@ -46,14 +47,22 @@ public class HandleEnum2EnumMap<T extends Enum<T>> extends HandleAbstractMap<Enu
   protected HandleEnum2EnumMap(Registry registry, Class<? extends Enum> keyClass, Class<? extends Enum> valClass) throws NoHandlerFoundException {
     super(registry, keyClass, valClass);
     this.keyClass = (Class<T>) keyClass;
-    this.keys = (T[]) NullHelper.notnullJ(keyClass.getEnumConstants(), "Class#getEnumConstants");
-    this.vals = NullHelper.notnullJ(valClass.getEnumConstants(), "Class#getEnumConstants");
+    this.keys = (T[]) getEnumConstants(keyClass);
+    this.vals = getEnumConstants(valClass);
     // Add one to vals.length for null
-    this.valspace= Integer.numberOfTrailingZeros(Integer.highestOneBit(vals.length + 1)) + 1;
+    this.valspace = getValspace(vals.length);
     
     if (keys.length * valspace > 64) {
       throw new IllegalArgumentException("Enums " + keyClass + " and " + valClass + " cannot be used, as they have too many combinations.");
     }
+  }
+  
+  private <E> E[] getEnumConstants(Class<E> clazz) {
+    return NullHelper.notnullJ(clazz.getEnumConstants(), "Class#getEnumConstants");
+  }
+  
+  private int getValspace(int valCount) {
+    return Integer.numberOfTrailingZeros(Integer.highestOneBit(valCount + 1)) + 1;
   }
   
   @Override
@@ -74,7 +83,13 @@ public class HandleEnum2EnumMap<T extends Enum<T>> extends HandleAbstractMap<Enu
       for (int i = 0; i < types.length; i++) {
         paramClasses[i] = TypeUtil.toClass(NullHelper.notnullJ(types[i], "ParameterizedType#getActualTypeArguments[i]"));
       }
-      return paramClasses.length == 2 && paramClasses[0].isEnum() && paramClasses[1].isEnum();
+      if (paramClasses.length == 2 && paramClasses[0].isEnum() && paramClasses[1].isEnum()) {
+        // Make sure we can store this, otherwise it will fall back to EnumMap handler
+        int keys = getEnumConstants(paramClasses[0]).length;
+        int vals = getEnumConstants(paramClasses[1]).length;
+        int valspace = getValspace(vals);
+        return keys * valspace <= 64;
+      }
     }
     return false;
   }
@@ -96,7 +111,7 @@ public class HandleEnum2EnumMap<T extends Enum<T>> extends HandleAbstractMap<Enu
       }
       value = value | (subvalue << (key.ordinal() * valspace));
     }
-    nbt.setIntArray(name, new int[] {valspace, (int) (value >>> 32), (int) (value & 0xFFFFFFFF)});
+    nbt.setIntArray(name, new int[] {valspace, BitUtil.getLongMSB(value), BitUtil.getLongLSB(value)});
     return true;
   }
 
@@ -124,7 +139,7 @@ public class HandleEnum2EnumMap<T extends Enum<T>> extends HandleAbstractMap<Enu
       }
       int space = raw[0];
       int mask = (1 << space) - 1;
-      long value = ((long) raw[1] << 32) | raw[2];
+      long value = BitUtil.longFromInts(raw[1], raw[2]);
       for (T key : keys) {
         long subvalue = (value >>> (key.ordinal() * space)) & mask;
         if (subvalue > 0 && subvalue <= vals.length) {
