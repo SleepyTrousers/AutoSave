@@ -1,7 +1,6 @@
 package info.loenwind.autosave.test;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -16,15 +15,17 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class FailureTests {
   
+  private class Unknown {}
+  
   private class BadField {
     
-    private @Store BitSet invalid = new BitSet();
+    private @Store Unknown invalid = new Unknown();
     
   }
   
   private class BadGeneric {
     
-    private @Store List<BitSet> invalid = new ArrayList<>();
+    private @Store List<Unknown> invalid = new ArrayList<>();
     
   }
   
