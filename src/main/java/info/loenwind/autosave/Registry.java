@@ -22,6 +22,7 @@ import info.loenwind.autosave.handlers.java.HandleEnum;
 import info.loenwind.autosave.handlers.java.HandleEnum2EnumMap;
 import info.loenwind.autosave.handlers.java.HandleEnumMap;
 import info.loenwind.autosave.handlers.java.HandleHashMap;
+import info.loenwind.autosave.handlers.java.HandleHashSet;
 import info.loenwind.autosave.handlers.java.HandlePrimitive;
 import info.loenwind.autosave.handlers.java.HandleString;
 import info.loenwind.autosave.handlers.minecraft.HandleBlockPos;
@@ -175,6 +176,8 @@ public class Registry {
     // Collections
     try {
       GLOBAL_REGISTRY.register(new HandleArrayList());
+      
+      GLOBAL_REGISTRY.register(new HandleHashSet());
 
       GLOBAL_REGISTRY.register(new HandleHashMap());
       GLOBAL_REGISTRY.register(new HandleEnum2EnumMap<>()); // This MUST be before HandleEnumMap as it is a special case

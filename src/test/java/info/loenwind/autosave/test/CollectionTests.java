@@ -4,6 +4,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 
 import info.loenwind.autosave.Reader;
@@ -29,6 +31,7 @@ public class CollectionTests {
 
     public @Store List<String> strings;
     public @Store Map<String, Integer> intMap;
+    public @Store Set<String> stringSet;
     public @Store EnumMap<EnumFacing, String> facingMap;
     public @Store EnumMap<EnumFacing, EnumFacing> facing2facing;
 
@@ -38,6 +41,8 @@ public class CollectionTests {
       intMap = new HashMap<>();
       intMap.put("foo", 123);
       intMap.put("bar", 456);
+      
+      stringSet = Sets.newHashSet("unique", "elements", "only");
       
       facingMap = new EnumMap<>(EnumFacing.class);
       facingMap.put(EnumFacing.UP, "up");
@@ -75,6 +80,11 @@ public class CollectionTests {
   @Test
   public void testStringList() {
     Assertions.assertEquals(before.strings, after.strings);
+  }
+  
+  @Test
+  public void testStringSet() {
+    Assertions.assertEquals(before.stringSet, after.stringSet);
   }
 
   @Test

@@ -87,6 +87,7 @@ Writer.write(registry, tag, new Wrapper());
 - String
 - Enum
 - List (ArrayList)
+- Set (HashSet)
 - Map (HashMap)
 - EnumMap
 - Enum2EnumMap (Not a class, but a special case of EnumMap where the data is packed more efficiently)
