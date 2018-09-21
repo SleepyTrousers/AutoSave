@@ -21,6 +21,14 @@ public class DelegatingHandler<T, R> implements IHandler<T> {
   private final @Nonnull Function<T, R> storeConverter;
   private final @Nonnull Function<R, T> readConverter;
   
+  /**
+   * This exists to make javac happy in cases where T might not be strongly
+   * bound by the function parameters.
+   */
+  public DelegatingHandler(Class<T> type, IHandler<R> delegate, Function<T, R> storeConverter, Function<R, T> readConverter) {
+    this((Type) type, delegate, storeConverter, readConverter);
+  }
+
   public DelegatingHandler(Type type, IHandler<R> delegate, Function<T, R> storeConverter, Function<R, T> readConverter) {
     this.type = type;
     this.delegate = delegate;

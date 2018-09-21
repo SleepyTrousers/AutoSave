@@ -24,13 +24,13 @@ public class HandleEnumMap<K extends Enum<K>> extends HandleMap<EnumMap<K, ?>>{
   private final K[] enumValues;
   
   public HandleEnumMap() throws NoHandlerFoundException {
-    super((Class<? extends EnumMap<K, ?>>) EnumMap.class);
+    super((Class<EnumMap<K, ?>>) (Class) EnumMap.class);
     this.enumClass = (Class<K>) (Class) Enum.class;
     this.enumValues = (K[]) new Enum[0];
   }
   
   protected HandleEnumMap(Registry registry, Class<K> enumClass, Class<?> valueClass) throws NoHandlerFoundException {
-    super((Class<? extends EnumMap<K, ?>>) EnumMap.class, registry, enumClass, valueClass);
+    super((Class<EnumMap<K, ?>>) (Class) EnumMap.class, registry, enumClass, valueClass);
     this.enumClass = enumClass;
     this.enumValues = NullHelper.notnullJ(enumClass.getEnumConstants(), "Class#getEnumConstants");
   }
