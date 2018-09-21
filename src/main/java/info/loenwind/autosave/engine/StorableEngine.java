@@ -26,6 +26,7 @@ import info.loenwind.autosave.handlers.internal.NullHandler;
 import info.loenwind.autosave.util.Log;
 import info.loenwind.autosave.util.NBTAction;
 import info.loenwind.autosave.util.NullHelper;
+import info.loenwind.autosave.util.TypeUtil;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
@@ -89,7 +90,7 @@ public class StorableEngine {
         if (!tag.hasKey(fieldName + NULL_POSTFIX) && fieldName != null) {
           for (IHandler handler : fieldHandlerCache.get(field)) {
             Log.livetraceNBT("Trying to read data for field ", fieldName, " with handler ", handler);
-            Object result = handler.read(registry, phase, tag, field, fieldName, fieldData);
+            Object result = handler.read(registry, phase, tag, TypeUtil.getGenericType(field), fieldName, fieldData);
             if (result != null) {
               Log.livetraceNBT("Read data for field ", fieldName, " with handler ", handler, " yielded data: ", result);
               field.set(object, result);
@@ -109,7 +110,7 @@ public class StorableEngine {
     if (superclazz != null) {
       for (IHandler handler : superclassHandlerCache.get(superclazz)) {
         Log.livetraceNBT("Trying to read data for super class ", superclazz, " with handler ", handler);
-        if (handler.read(registry, phase, tag, null, SUPERCLASS_KEY, object) != null) {
+        if (handler.read(registry, phase, tag, superclazz, SUPERCLASS_KEY, object) != null) {
           Log.livetraceNBT("Read data for super class ", superclazz, " with handler ", handler);
           break;
         }
@@ -134,7 +135,7 @@ public class StorableEngine {
         if (fieldData != null && fieldName != null) {
           for (IHandler handler : fieldHandlerCache.get(field)) {
             Log.livetraceNBT("Trying to save data for field ", fieldName, " with handler ", handler);
-            if (handler.store(registry, phase, tag, fieldName, fieldData)) {
+            if (handler.store(registry, phase, tag, TypeUtil.getGenericType(field), fieldName, fieldData)) {
               Log.livetraceNBT("Saved data for field ", fieldName, " with handler ", handler, ". NBT now is ", tag);
               break;
             }
@@ -152,7 +153,7 @@ public class StorableEngine {
     if (superclazz != null) {
       for (IHandler handler : superclassHandlerCache.get(superclazz)) {
         Log.livetraceNBT("Trying to save data for super class ", superclazz, " with handler ", handler);
-        if (handler.store(registry, phase, tag, SUPERCLASS_KEY, object)) {
+        if (handler.store(registry, phase, tag, superclazz, SUPERCLASS_KEY, object)) {
           Log.livetraceNBT("Saved data for super class ", superclazz, " with handler ", handler);
           break;
         }
@@ -163,10 +164,10 @@ public class StorableEngine {
   }
 
   public static @Nullable <T> T getSingleField(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, String fieldName,
-      Class<T> clazz, @Nullable T object) throws InstantiationException, IllegalAccessException, IllegalArgumentException, NoHandlerFoundException {
+      Type type, @Nullable T object) throws InstantiationException, IllegalAccessException, IllegalArgumentException, NoHandlerFoundException {
     if (!tag.hasKey(fieldName + NULL_POSTFIX)) {
-      for (IHandler<T> handler : registry.findHandlers(clazz)) {
-        T result = handler.read(registry, phase, tag, null, fieldName, object);
+      for (IHandler<T> handler : registry.findHandlers(type)) {
+        T result = handler.read(registry, phase, tag, type, fieldName, object);
         if (result != null) {
           return result;
         }
@@ -176,15 +177,15 @@ public class StorableEngine {
   }
 
   public static <T> void setSingleField(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, String fieldName,
-      Class<T> clazz, @Nullable T fieldData) throws InstantiationException, IllegalAccessException, IllegalArgumentException, NoHandlerFoundException {
+      Type fieldType, @Nullable T fieldData) throws InstantiationException, IllegalAccessException, IllegalArgumentException, NoHandlerFoundException {
     if (fieldData != null) {
       tag.removeTag(fieldName + NULL_POSTFIX);
-      for (IHandler<T> handler : registry.findHandlers(clazz)) {
-        if (handler.store(registry, phase, tag, fieldName, fieldData)) {
+      for (IHandler<T> handler : registry.findHandlers(fieldType)) {
+        if (handler.store(registry, phase, tag, fieldType, fieldName, fieldData)) {
           return;
         }
       }
-      throw new NoHandlerFoundException(clazz, fieldName);
+      throw new NoHandlerFoundException(fieldType, fieldName);
     } else {
       tag.removeTag(fieldName);
       tag.setBoolean(fieldName + NULL_POSTFIX, true);

@@ -1,6 +1,5 @@
 package info.loenwind.autosave.handlers.java.util;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,7 +28,7 @@ public abstract class HandleMap<T extends Map> extends HandleGenericType<T> {
   }
   
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, T object)
+  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, T object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     NBTTagList tag = new NBTTagList();
     for (Entry e : (Set<Entry>) object.entrySet()) {
@@ -53,7 +52,7 @@ public abstract class HandleMap<T extends Map> extends HandleGenericType<T> {
   }
 
   @Override
-  public @Nullable T read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name,
+  public @Nullable T read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
       @Nullable T object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     if (nbt.hasKey(name)) {
       if (object == null) {
@@ -65,8 +64,8 @@ public abstract class HandleMap<T extends Map> extends HandleGenericType<T> {
       NBTTagList tag = nbt.getTagList(name, Constants.NBT.TAG_COMPOUND);
       for (int i = 0; i < tag.tagCount(); i++) {
         NBTTagCompound etag = tag.getCompoundTagAt(i);
-        Object key = etag.getBoolean("key" + StorableEngine.NULL_POSTFIX) ? null : readRecursive(0, registry, phase, etag, field, "key", null);
-        Object val = etag.getBoolean("val" + StorableEngine.NULL_POSTFIX) ? null : readRecursive(1, registry, phase, etag, field, "val", null);
+        Object key = etag.getBoolean("key" + StorableEngine.NULL_POSTFIX) ? null : readRecursive(0, registry, phase, etag, "key", null);
+        Object val = etag.getBoolean("val" + StorableEngine.NULL_POSTFIX) ? null : readRecursive(1, registry, phase, etag, "val", null);
         object.put(key, val);
       }
     }

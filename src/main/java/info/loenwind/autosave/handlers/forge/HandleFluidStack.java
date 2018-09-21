@@ -1,6 +1,6 @@
 package info.loenwind.autosave.handlers.forge;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -23,7 +23,7 @@ public class HandleFluidStack implements IHandler<FluidStack> {
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, FluidStack object)
+  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, FluidStack object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     NBTTagCompound tag = new NBTTagCompound();
     object.writeToNBT(tag);
@@ -32,7 +32,7 @@ public class HandleFluidStack implements IHandler<FluidStack> {
   }
 
   @Override
-  public @Nullable FluidStack read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name,
+  public @Nullable FluidStack read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
       @Nullable FluidStack object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     if (nbt.hasKey(name)) {
       return FluidStack.loadFluidStackFromNBT(nbt.getCompoundTag(name));

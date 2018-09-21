@@ -1,6 +1,6 @@
 package info.loenwind.autosave.handlers.minecraft;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -23,14 +23,14 @@ public class HandleBlockPos implements IHandler<BlockPos> {
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, BlockPos object)
+  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, BlockPos object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     nbt.setLong(name, object.toLong());
     return true;
   }
 
   @Override
-  public @Nullable BlockPos read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name,
+  public @Nullable BlockPos read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
       @Nullable BlockPos object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     if (nbt.hasKey(name)) {
       return BlockPos.fromLong(nbt.getLong(name));

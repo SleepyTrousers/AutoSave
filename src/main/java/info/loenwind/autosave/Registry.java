@@ -181,10 +181,11 @@ public class Registry {
       // List/ArrayList
       GLOBAL_REGISTRY.register(new HandleArrayList());
       // LinkedList
-      GLOBAL_REGISTRY.register(new HandleSimpleCollection<>(LinkedList.class, LinkedList::new));
+      GLOBAL_REGISTRY.register(new HandleSimpleCollection<>(LinkedList.class));
       
       // Set/HashSet
       GLOBAL_REGISTRY.register(new HandleHashSet());
+      GLOBAL_REGISTRY.register(new HandleEnumSet());
 
       GLOBAL_REGISTRY.register(new HandleHashMap());
       GLOBAL_REGISTRY.register(new HandleEnum2EnumMap<>()); // This MUST be before HandleEnumMap as it is a special case

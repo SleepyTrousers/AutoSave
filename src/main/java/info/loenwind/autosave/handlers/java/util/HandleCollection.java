@@ -1,6 +1,5 @@
 package info.loenwind.autosave.handlers.java.util;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Set;
@@ -26,7 +25,7 @@ public abstract class HandleCollection<T extends Collection> extends HandleGener
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, T object)
+  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, T object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     NBTTagCompound tag = new NBTTagCompound();
     tag.setInteger("size", object.size());
@@ -34,7 +33,7 @@ public abstract class HandleCollection<T extends Collection> extends HandleGener
     for (Object elem : object) {
       if (elem != null) {
         for (IHandler handler : subHandlers[0]) {
-          handler.store(registry, phase, tag, i + "", elem);
+          handler.store(registry, phase, tag, type, i + "", elem);
         }
       }
       i++;
@@ -44,7 +43,7 @@ public abstract class HandleCollection<T extends Collection> extends HandleGener
   }
 
   @Override
-  public @Nullable T read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name,
+  public @Nullable T read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
       @Nullable T object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     if (nbt.hasKey(name)) {
       if (object == null) {
@@ -56,7 +55,7 @@ public abstract class HandleCollection<T extends Collection> extends HandleGener
       NBTTagCompound tag = nbt.getCompoundTag(name);
       int size = tag.getInteger("size");
       for (int i = 0; i < size; i++) {
-        object.add(readRecursive(0, registry, phase, tag, null, i + "", null));
+        object.add(readRecursive(0, registry, phase, tag, i + "", null));
       }
     }
     return object;

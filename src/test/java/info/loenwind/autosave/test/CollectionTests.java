@@ -35,6 +35,7 @@ public class CollectionTests {
     public @Store LinkedList<String> linkedListStrings;
 
     public @Store Set<String> stringSet;
+    public @Store EnumSet<EnumFacing> enumSet;
     
     public @Store Map<String, Integer> intMap;
     public @Store EnumMap<EnumFacing, String> facingMap;
@@ -49,7 +50,9 @@ public class CollectionTests {
       intMap.put("bar", 456);
       
       stringSet = Sets.newHashSet("unique", "elements", "only");
-            
+      
+      enumSet = EnumSet.of(EnumFacing.UP, EnumFacing.WEST, EnumFacing.EAST);
+      
       facingMap = new EnumMap<>(EnumFacing.class);
       facingMap.put(EnumFacing.UP, "up");
       facingMap.put(EnumFacing.DOWN, "down");
@@ -96,6 +99,11 @@ public class CollectionTests {
   @Test
   public void testStringSet() {
     Assertions.assertEquals(before.stringSet, after.stringSet);
+  }
+  
+  @Test
+  public void testEnumSet() {
+    Assertions.assertEquals(before.enumSet, after.enumSet);
   }
 
   @Test

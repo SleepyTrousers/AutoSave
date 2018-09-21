@@ -1,6 +1,5 @@
 package info.loenwind.autosave.handlers.util;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -94,17 +93,17 @@ public abstract class HandleGenericType<T> implements IHandler<T> {
   protected final void storeRecursive(int param, Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, Object object) 
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     for (IHandler handler : subHandlers[param]) {
-      if (handler.store(registry, phase, nbt, name, object)) {
+      if (handler.store(registry, phase, nbt, types[param], name, object)) {
         return;
       }
     }
   }
 
   @SuppressWarnings({ "unchecked"})
-  protected final @Nullable <V> V readRecursive(int param, Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name, @Nullable V object) 
+  protected final @Nullable <V> V readRecursive(int param, Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, @Nullable V object) 
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     for (IHandler handler : subHandlers[param]) {
-      V result = (V) handler.read(registry, phase, nbt, field, name, object);
+      V result = (V) handler.read(registry, phase, nbt, types[param], name, object);
       if (result != null) {
         return result;
       }

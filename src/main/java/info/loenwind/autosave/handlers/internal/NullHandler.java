@@ -1,6 +1,6 @@
 package info.loenwind.autosave.handlers.internal;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -27,13 +27,13 @@ public class NullHandler implements IHandler<NullHandler> {
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name,
+  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
       NullHandler object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     return false;
   }
 
   @Override
-  public @Nullable NullHandler read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field,
+  public @Nullable NullHandler read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type,
       String name, @Nullable NullHandler object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     return null;

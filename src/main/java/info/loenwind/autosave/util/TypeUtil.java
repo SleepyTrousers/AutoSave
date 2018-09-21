@@ -2,6 +2,7 @@ package info.loenwind.autosave.util;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.function.Supplier;
@@ -43,11 +44,15 @@ public class TypeUtil {
     }
     return () -> {
       try {
-        return (T) handle.invokeExact();
+        return (T) handle.invoke();
       } catch (Throwable e) {
         throw new RuntimeException(e);
       }
     };
+  }
+  
+  public static Type getGenericType(Field field) {
+    return NullHelper.notnullJ(field.getGenericType(), "Field#getGenericType"); // TODO Would caching this be worthwhile? Seems to be cached in Field already.
   }
 
 }

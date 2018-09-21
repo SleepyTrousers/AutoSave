@@ -1,7 +1,6 @@
 package info.loenwind.autosave.handlers.java;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +48,7 @@ public class HandleArrays implements IHandler<Object> {
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, Object object)
+  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, Object object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     NBTTagCompound tag = new NBTTagCompound();
     int size = Array.getLength(object);
@@ -58,7 +57,7 @@ public class HandleArrays implements IHandler<Object> {
       Object elem = Array.get(object, i);
       if (elem != null) {
         for (IHandler handler : componentHandlers) {
-          if (handler.store(registry, phase, tag, i + "", elem)) {
+          if (handler.store(registry, phase, tag, type, i + "", elem)) {
             break;
           }
         }
@@ -70,10 +69,10 @@ public class HandleArrays implements IHandler<Object> {
 
   @Override
   @Nullable
-  public Object read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name, @Nullable Object object)
+  public Object read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, @Nullable Object object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    Type type = componentType;
-    if (type == null) {
+    Type compType = componentType;
+    if (compType == null) {
       return null;
     }
     if (nbt.hasKey(name)) {
@@ -81,13 +80,13 @@ public class HandleArrays implements IHandler<Object> {
       int size = tag.getInteger("size");
       
       if (object == null) {
-        object = Array.newInstance(TypeUtil.toClass(type), size);
+        object = Array.newInstance(TypeUtil.toClass(compType), size);
       }
 
       for (int i = 0; i < size; i++) {
         if (tag.hasKey(i + "")) {
           for (IHandler handler : componentHandlers) {
-            Object result = handler.read(registry, phase, tag, null, i + "", null);
+            Object result = handler.read(registry, phase, tag, compType, i + "", null);
             if (result != null) {
               Array.set(object, i, result);
               break;

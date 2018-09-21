@@ -1,6 +1,6 @@
 package info.loenwind.autosave.handlers.minecraft;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -24,7 +24,7 @@ public class HandleItemStack implements IHandler<ItemStack> {
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, ItemStack object)
+  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, ItemStack object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     if (object.isEmpty()) {
       nbt.setBoolean(name + StorableEngine.EMPTY_POSTFIX, true);
@@ -37,7 +37,7 @@ public class HandleItemStack implements IHandler<ItemStack> {
   }
 
   @Override
-  public @Nullable ItemStack read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name,
+  public @Nullable ItemStack read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
       @Nullable ItemStack object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     if (nbt.hasKey(name)) {
       NBTTagCompound tag = nbt.getCompoundTag(name);

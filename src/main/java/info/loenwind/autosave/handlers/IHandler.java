@@ -1,6 +1,5 @@
 package info.loenwind.autosave.handlers;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Set;
 
@@ -61,6 +60,11 @@ public interface IHandler<T> {
    *          should be ignored
    * @param nbt
    *          The NBT to store the data
+   * @param type
+   *          The full type information of the object being read, including 
+   *          generic information. Use this for handlers such as enums which 
+   *          need to reflectively access the class. To convert to a 
+   *          {@link Class}, use {@link TypeUtil#getClass()}.
    * @param name
    *          The name of the tag in the nbt where the data should be stored. Please note that this will be overwritten by the final handler if you are
    *          returning false. Use name + "__" as a prefix in this case
@@ -75,7 +79,7 @@ public interface IHandler<T> {
    * @throws InstantiationException
    * @throws NoHandlerFoundException
    */
-  boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, T object)
+  boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, T object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException;
 
   /**
@@ -92,10 +96,11 @@ public interface IHandler<T> {
    *          should be ignored
    * @param nbt
    *          The NBT to read the data from
-   * @param field
-   *          A reference to the field the returned object belongs to. This is purely to allow the handler to use reflection to determine further details about
-   *          the data type. The handler is NOT allowed to change the field. This will be null if the handler is not running in the context of a @Storable
-   *          class, e.g. when it is running on the values of a List or Map.
+   * @param type
+   *          The full type information of the object being read, including 
+   *          generic information. Use this for handlers such as enums which 
+   *          need to reflectively access the class. To convert to a 
+   *          {@link Class}, use {@link TypeUtil#getClass()}.
    * @param name
    *          The name of the tag in the nbt where the data should be read from.
    *          This tag may not exist!
@@ -115,6 +120,6 @@ public interface IHandler<T> {
    * @throws NoHandlerFoundException
    */
   @Nullable
-  T read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name, @Nullable T object)
+  T read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, @Nullable T object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException;
 }

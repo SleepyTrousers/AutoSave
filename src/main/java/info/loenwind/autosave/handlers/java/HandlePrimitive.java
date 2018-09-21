@@ -1,6 +1,5 @@
 package info.loenwind.autosave.handlers.java;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Set;
 
@@ -51,14 +50,14 @@ public class HandlePrimitive<T> implements IHandler<T> {
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name,
+  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
       T object) throws IllegalArgumentException, IllegalAccessException {
     writer.set(nbt, name, object);
     return true;
   }
 
   @Override
-  public @Nullable T read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name,
+  public @Nullable T read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
       @Nullable T object) {
     return nbt.hasKey(name) ? reader.get(nbt, name) : object != null ? object : defaultValue;
   }

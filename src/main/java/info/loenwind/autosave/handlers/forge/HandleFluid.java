@@ -1,6 +1,6 @@
 package info.loenwind.autosave.handlers.forge;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -24,7 +24,7 @@ public class HandleFluid implements IHandler<Fluid> {
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, Fluid object)
+  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, Fluid object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     String fluidName = FluidRegistry.getFluidName(object);
     if (fluidName == null) {
@@ -35,7 +35,7 @@ public class HandleFluid implements IHandler<Fluid> {
   }
 
   @Override
-  public @Nullable Fluid read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name,
+  public @Nullable Fluid read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
       @Nullable Fluid object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     return nbt.hasKey(name) ? FluidRegistry.getFluid(nbt.getString(name)) : object;
   }

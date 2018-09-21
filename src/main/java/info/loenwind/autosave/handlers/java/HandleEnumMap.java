@@ -1,6 +1,5 @@
 package info.loenwind.autosave.handlers.java;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.EnumMap;
 import java.util.Set;
@@ -42,7 +41,7 @@ public class HandleEnumMap<K extends Enum<K>> extends HandleMap<EnumMap<K, ?>>{
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name,
+  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
       EnumMap<K, ?> object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     NBTTagCompound tag = new NBTTagCompound();
     for (K key : enumValues) {
@@ -59,7 +58,7 @@ public class HandleEnumMap<K extends Enum<K>> extends HandleMap<EnumMap<K, ?>>{
   }
 
   @Override
-  public @Nullable EnumMap<K, ?> read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field,
+  public @Nullable EnumMap<K, ?> read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type,
       String name, @Nullable EnumMap<K, ?> object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     if (nbt.hasKey(name)) {
@@ -70,7 +69,7 @@ public class HandleEnumMap<K extends Enum<K>> extends HandleMap<EnumMap<K, ?>>{
       for (K key : enumValues) {
         String keystr = NullHelper.notnullJ(Integer.toString(key.ordinal()), "Integer.toString is null");
         if (!tag.getBoolean(keystr + StorableEngine.NULL_POSTFIX)) {
-          object.put(key, readRecursive(1, registry, phase, tag, null, keystr, null));
+          object.put(key, readRecursive(1, registry, phase, tag, keystr, null));
         }
       }
     }

@@ -1,6 +1,5 @@
 package info.loenwind.autosave.handlers.java;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.EnumMap;
@@ -96,7 +95,7 @@ public class HandleEnum2EnumMap<T extends Enum<T>> extends HandleMap<EnumMap<T, 
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name,
+  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
       EnumMap<T, Enum> object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     long value = 0;
     for (T key : keys) {
@@ -112,7 +111,7 @@ public class HandleEnum2EnumMap<T extends Enum<T>> extends HandleMap<EnumMap<T, 
   }
 
   @Override
-  public @Nullable EnumMap read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field,
+  public @Nullable EnumMap read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type,
       String name, @Nullable EnumMap<T, Enum> object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     if (nbt.hasKey(name)) {
@@ -143,7 +142,7 @@ public class HandleEnum2EnumMap<T extends Enum<T>> extends HandleMap<EnumMap<T, 
         } else if (subvalue == 0) {
           object.remove(key);
         } else {
-          Log.error("Found invalid map value when parsing enum2enum map! Data: %s   Field: %s", nbt, field);
+          Log.error("Found invalid map value when parsing enum2enum map! Data: %s   Type: %s", nbt, type);
           Thread.dumpStack();
         }
       }

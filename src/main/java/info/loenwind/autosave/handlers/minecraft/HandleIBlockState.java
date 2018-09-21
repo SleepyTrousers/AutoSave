@@ -1,6 +1,6 @@
 package info.loenwind.autosave.handlers.minecraft;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -24,7 +24,7 @@ public class HandleIBlockState implements IHandler<IBlockState> {
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, IBlockState object)
+  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, IBlockState object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     NBTTagCompound tag = new NBTTagCompound();
     NBTUtil.writeBlockState(tag, object);
@@ -33,7 +33,7 @@ public class HandleIBlockState implements IHandler<IBlockState> {
   }
 
   @Override
-  public @Nullable IBlockState read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, @Nullable Field field, String name,
+  public @Nullable IBlockState read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
       @Nullable IBlockState object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     return NBTUtil.readBlockState(nbt.getCompoundTag(name));
   }
