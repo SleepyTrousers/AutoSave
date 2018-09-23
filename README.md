@@ -1,4 +1,4 @@
-AutoSave ![CircleCI branch](https://img.shields.io/circleci/project/github/RedSparr0w/node-csgo-parser/master.svg?style=flat-square)
+AutoSave [![CircleCI branch](https://img.shields.io/circleci/project/github/RedSparr0w/node-csgo-parser/master.svg?style=flat-square)](https://circleci.com/gh/SleepyTrousers/AutoSave)
 ===========
 
 Automatically save, load, and sync NBT data with a easy to use, easy to extend, annotation based API.
