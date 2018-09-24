@@ -305,7 +305,7 @@ public class Registry {
       }
     }
 
-    findRegisteredHandlers(type, result);
+    findRegisteredHandlers(this, type, result);
       
     return result;
   }
@@ -316,16 +316,16 @@ public class Registry {
    * @param clazz
    * @param result
    */
-  private void findRegisteredHandlers(Type type, List<IHandler> result) {
+  private void findRegisteredHandlers(Registry caller, Type type, List<IHandler> result) {
     for (IHandler handler : handlers) {
-      handler = handler.getHandler(this, type);
+      handler = handler.getHandler(caller, type);
       if (handler != null) {
         result.add(handler);
       }
     }
     final Registry thisParent = parent;
     if (thisParent != null) {
-      thisParent.findRegisteredHandlers(type, result);
+      thisParent.findRegisteredHandlers(caller, type, result);
     }
   }
 
