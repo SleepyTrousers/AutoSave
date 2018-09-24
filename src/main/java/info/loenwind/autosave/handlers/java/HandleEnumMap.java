@@ -29,7 +29,7 @@ public class HandleEnumMap<K extends Enum<K>> extends HandleMap<EnumMap<K, ?>>{
     this.enumValues = (K[]) new Enum[0];
   }
   
-  protected HandleEnumMap(Registry registry, Class<K> enumClass, Class<?> valueClass) throws NoHandlerFoundException {
+  protected HandleEnumMap(Registry registry, Class<K> enumClass, Type valueClass) throws NoHandlerFoundException {
     super((Class<EnumMap<K, ?>>) (Class) EnumMap.class, registry, enumClass, valueClass);
     this.enumClass = enumClass;
     this.enumValues = NullHelper.notnullJ(enumClass.getEnumConstants(), "Class#getEnumConstants");
@@ -37,7 +37,7 @@ public class HandleEnumMap<K extends Enum<K>> extends HandleMap<EnumMap<K, ?>>{
 
   @Override
   protected IHandler<? extends EnumMap<K, ?>> create(Registry registry, @NonnullType Type... types) throws NoHandlerFoundException {
-    return new HandleEnumMap<K>(registry, (Class<K>) TypeUtil.toClass(types[0]), TypeUtil.toClass(types[1]));
+    return new HandleEnumMap<K>(registry, (Class<K>) TypeUtil.toClass(types[0]), types[1]);
   }
 
   @Override
