@@ -5,6 +5,25 @@ Automatically save, load, and sync NBT data with a easy to use, easy to extend, 
 
 ## How To Use
 
+### Add as a dependency
+
+First add tterrag's alternate maven to your buildscript
+```groovy
+repositories {
+    maven { url = "http://maven2.tterrag.com" } // AutoSave
+}
+```
+
+Then add AutoSave as a maven dependency
+```groovy
+dependencies {
+    compile "info.loenwind.autosave:AutoSave:${minecraft_version}-${autosave_version}"
+}
+```
+Where `autosave_version` is defined in your `gradle.properties` file. See the [maven listings](https://maven2.tterrag.com/info/loenwind/autosave/AutoSave/) for versions.
+
+However, to allow for multiple mods to depend on AutoSave without conflict (and without shading) we recommend you use Forge's [Contained Dependencies](https://mcforge.readthedocs.io/en/latest/gettingstarted/dependencymanagement/) system.
+
 ### Label your fields
 
 Simply annotate any fields that need to be saved with `@Store`.
