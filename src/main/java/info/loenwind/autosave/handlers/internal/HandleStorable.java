@@ -55,12 +55,18 @@ public class HandleStorable<T extends Object> implements IHandler<T> {
   }
 
   @Override
-  public @Nullable T read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
-      @Nullable T object)
+  public @Nullable T read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, @Nullable T object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    if (nbt.hasKey(name) && object != null) {
-      NBTTagCompound tag = NullHelper.notnullM(nbt.getCompoundTag(name), "NBTTagCompound.getCompoundTag()");
-      StorableEngine.read(registry, phase, tag, object);
+    if (nbt.hasKey(name)) {
+      if (object == null) {
+        object = (T) StorableEngine.instanciate(type);
+      }
+      if (object != null) {
+        NBTTagCompound tag = NullHelper.notnullM(nbt.getCompoundTag(name), "NBTTagCompound.getCompoundTag()");
+        StorableEngine.read(registry, phase, tag, object);
+      } else {
+        // TODO error
+      }
     }
     return object;
   }

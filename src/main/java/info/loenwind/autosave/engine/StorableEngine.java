@@ -1,6 +1,8 @@
 package info.loenwind.autosave.engine;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,12 +13,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import info.loenwind.autosave.Reader;
 import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.Writer;
+import info.loenwind.autosave.annotations.Factory;
 import info.loenwind.autosave.annotations.Storable;
 import info.loenwind.autosave.annotations.Store;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
@@ -53,14 +55,15 @@ public class StorableEngine {
     }
   };
 
-  public static final @Nonnull String NULL_POSTFIX = "-";
-  public static final @Nonnull String EMPTY_POSTFIX = "+";
-  public static final @Nonnull String SUPERCLASS_KEY = "__superclass";
-  private final @Nonnull Map<Class<?>, List<Field>> fieldCache = new HashMap<Class<?>, List<Field>>();
-  private final @Nonnull Map<Field, Set<NBTAction>> phaseCache = new HashMap<Field, Set<NBTAction>>();
-  private final @Nonnull Map<Field, List<IHandler>> fieldHandlerCache = new HashMap<Field, List<IHandler>>();
-  private final @Nonnull Map<Class<?>, Class<?>> superclassCache = new HashMap<Class<?>, Class<?>>();
-  private final @Nonnull Map<Class<?>, List<IHandler>> superclassHandlerCache = new HashMap<Class<?>, List<IHandler>>();
+  public static final String NULL_POSTFIX = "-";
+  public static final String EMPTY_POSTFIX = "+";
+  public static final String SUPERCLASS_KEY = "__superclass";
+  private final Map<Class<?>, List<Field>> fieldCache = new HashMap<>();
+  private final Map<Field, Set<NBTAction>> phaseCache = new HashMap<>();
+  private final Map<Field, List<IHandler>> fieldHandlerCache = new HashMap<>();
+  private final Map<Class<?>, Class<?>> superclassCache = new HashMap<>();
+  private final Map<Class<?>, List<IHandler>> superclassHandlerCache = new HashMap<>();
+  private final Map<Class<?>, Method> factoryCache = new HashMap<>();
 
   private StorableEngine() {
   }
@@ -225,6 +228,17 @@ public class StorableEngine {
       }
     }
 
+    for (Method method : clazz.getDeclaredMethods()) {
+      Factory factory = method.getAnnotation(Factory.class);
+      if (factory != null) {
+        // TODO check siganture
+        method.setAccessible(true);
+        factoryCache.put(clazz, method);
+        break;
+      }
+    }
+    // TODO constructors
+
     Class<?> superclazz = clazz.getSuperclass();
     if (superclazz != null) {
       Storable annotation = superclazz.getAnnotation(Storable.class);
@@ -250,6 +264,36 @@ public class StorableEngine {
     }
 
     fieldCache.put(clazz, fieldList);
+  }
+
+  public @Nullable Object instanciate_impl(Type type) {
+    Class<?> clazz = TypeUtil.toClass(type);
+    Object result = null;
+    if (factoryCache.containsKey(clazz)) {
+      Method method = factoryCache.get(clazz);
+      try {
+        result = method.invoke(null);
+        if (result != null) {
+          return result;
+        }
+      } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+
+    try {
+      result = clazz.newInstance();
+    } catch (InstantiationException | IllegalAccessException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return result;
+  }
+
+  public static @Nullable Object instanciate(Type type) {
+    return INSTANCE.get().instanciate_impl(type);
   }
 
 }
