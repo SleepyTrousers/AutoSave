@@ -278,7 +278,7 @@ public class StorableEngine {
     for (Method method : clazz.getDeclaredMethods()) {
       if (method.isAnnotationPresent(Factory.class)) {
         Preconditions.checkArgument(!factoryCache.containsKey(clazz), "Cannot have multiple factory methods on class", method);
-        Preconditions.checkArgument(method.getReturnType().isAssignableFrom(clazz), "Factory method return type must be assignable to the owner type", method);
+        Preconditions.checkArgument(clazz.isAssignableFrom(method.getReturnType()), "Factory method return type must be assignable to the owner type", method);
         Preconditions.checkArgument(method.getParameterCount() == 0, "Factory method cannot take parameters", method);
         method.setAccessible(true);
         factoryCache.put(clazz, () -> method.invoke(null));
