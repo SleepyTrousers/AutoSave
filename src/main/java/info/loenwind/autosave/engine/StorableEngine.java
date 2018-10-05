@@ -306,9 +306,6 @@ public class StorableEngine {
       }
     }
     
-    List<AfterReadCallback> callbacks = new ArrayList<>();
-    findCallbacks(clazz, callbacks);
-
     Class<?> superclazz = clazz.getSuperclass();
     if (superclazz != null) {
       Storable annotation = superclazz.getAnnotation(Storable.class);
@@ -331,19 +328,18 @@ public class StorableEngine {
           }
         }
       }
-      // Callbacks are called up the hierarchy for subclasses
-      callbacks.addAll(callbackCache.get(superclazz));
     }
-
-    fieldCache.put(clazz, fieldList);
-  }
-  
-  private void findCallbacks(Class<?> clazz, List<AfterReadCallback> callbacks) throws IllegalArgumentException {
+    
+    // Find callback methods
+    List<AfterReadCallback> callbacks = new ArrayList<>();
     for (Method m : clazz.getDeclaredMethods()) {
       if (m.isAnnotationPresent(AfterRead.class)) { 
         callbacks.add(new AfterReadCallback(m));
       }
     }
+    callbackCache.put(clazz, callbacks);
+    
+    fieldCache.put(clazz, fieldList);
   }
 
   public Object instantiate_impl(Type type) throws IllegalArgumentException {
