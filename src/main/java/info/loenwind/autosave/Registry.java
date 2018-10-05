@@ -36,6 +36,7 @@ import info.loenwind.autosave.handlers.minecraft.HandleItemStack;
 import info.loenwind.autosave.handlers.util.DelegatingHandler;
 import info.loenwind.autosave.util.BitUtil;
 import info.loenwind.autosave.util.NullableType;
+import info.loenwind.autosave.util.TypeUtil;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
@@ -291,17 +292,18 @@ public class Registry {
   public List<IHandler> findHandlers(Type type) throws InstantiationException, IllegalAccessException {
     List<IHandler> result = new ArrayList<IHandler>();
 
-    if (type instanceof Class) {
-      Class<?> clazz = (Class<?>) type;
-      Storable annotation = clazz.getAnnotation(Storable.class);
-      while (annotation != null) {
-        if (annotation.handler() != HandleStorable.class) {
-          result.add(annotation.handler().newInstance());
-        }
-        Class<?> superclass = clazz.getSuperclass();
-        if (superclass != null) {
-          annotation = superclass.getAnnotation(Storable.class);
-        }
+    @Nonnull Class<?> clazz = TypeUtil.toClass(type);
+    Storable annotation = clazz.getAnnotation(Storable.class);
+    while (annotation != null) {
+      if (annotation.handler() != HandleStorable.class) {
+        result.add(annotation.handler().newInstance());
+      }
+      Class<?> superclass = clazz.getSuperclass();
+      if (superclass != null) {
+        annotation = superclass.getAnnotation(Storable.class);
+        clazz = superclass;
+      } else {
+        break; // Theoretically impossible as the hierarchy should always reach Object before null, but handle the case anyways
       }
     }
 
