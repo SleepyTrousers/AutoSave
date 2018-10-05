@@ -1,8 +1,11 @@
 package info.loenwind.autosave.engine;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,12 +15,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import com.google.common.base.Preconditions;
 
 import info.loenwind.autosave.Reader;
 import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.Writer;
+import info.loenwind.autosave.annotations.AfterRead;
 import info.loenwind.autosave.annotations.Factory;
 import info.loenwind.autosave.annotations.Storable;
 import info.loenwind.autosave.annotations.Store;
@@ -54,16 +62,47 @@ public class StorableEngine {
       return new StorableEngine();
     }
   };
+  
+  @FunctionalInterface
+  private interface ObjectFactory {
+    
+    @Nullable Object get() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
+    
+  }
+  
+  private static class AfterReadCallback {
+    private final Method callback;
+    private final boolean isStatic;
+    
+    AfterReadCallback(Method m) throws IllegalArgumentException {
+      Preconditions.checkArgument(m.getReturnType() == Void.class, "AfterRead methods cannot return a value", m);
+      Preconditions.checkArgument(m.getParameterCount() == 0, "AfterRead methods cannot take parameters", m);
+      
+      m.setAccessible(true);
+      this.callback = m;
+      this.isStatic = Modifier.isStatic(m.getModifiers());
+    }
+    
+    public void apply(Object inst) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+      callback.invoke(isStatic ? null : inst);
+    }
+    
+    @Override
+    public String toString() {
+      return NullHelper.notnullJ(callback.toString(), "Method#toString");
+    }
+  }
 
-  public static final String NULL_POSTFIX = "-";
-  public static final String EMPTY_POSTFIX = "+";
-  public static final String SUPERCLASS_KEY = "__superclass";
-  private final Map<Class<?>, List<Field>> fieldCache = new HashMap<>();
-  private final Map<Field, Set<NBTAction>> phaseCache = new HashMap<>();
-  private final Map<Field, List<IHandler>> fieldHandlerCache = new HashMap<>();
-  private final Map<Class<?>, Class<?>> superclassCache = new HashMap<>();
-  private final Map<Class<?>, List<IHandler>> superclassHandlerCache = new HashMap<>();
-  private final Map<Class<?>, Method> factoryCache = new HashMap<>();
+  public static final @Nonnull String NULL_POSTFIX = "-";
+  public static final @Nonnull String EMPTY_POSTFIX = "+";
+  public static final @Nonnull String SUPERCLASS_KEY = "__superclass";
+  private final @Nonnull Map<Class<?>, List<Field>> fieldCache = new HashMap<>();
+  private final @Nonnull Map<Field, Set<NBTAction>> phaseCache = new HashMap<>();
+  private final @Nonnull Map<Field, List<IHandler>> fieldHandlerCache = new HashMap<>();
+  private final @Nonnull Map<Class<?>, Class<?>> superclassCache = new HashMap<>();
+  private final @Nonnull Map<Class<?>, List<IHandler>> superclassHandlerCache = new HashMap<>();
+  private final @Nonnull Map<Class<?>, ObjectFactory> factoryCache = new HashMap<>();
+  private final @Nonnull Map<Class<?>, List<AfterReadCallback>> callbackCache = new HashMap<>();
 
   private StorableEngine() {
   }
@@ -120,6 +159,13 @@ public class StorableEngine {
       }
     }
 
+    for (AfterReadCallback callback : callbackCache.get(clazz)) {
+      try {
+        callback.apply(object);
+      } catch (IllegalArgumentException | InvocationTargetException e) {
+        throw new RuntimeException("Failed to invoke AfterRead: " + callback, e);
+      }
+    }
     Log.livetraceNBT("Read NBT data for object ", object, " of class ", clazz);
   }
 
@@ -228,16 +274,40 @@ public class StorableEngine {
       }
     }
 
+    // Find factory method
     for (Method method : clazz.getDeclaredMethods()) {
-      Factory factory = method.getAnnotation(Factory.class);
-      if (factory != null) {
-        // TODO check siganture
+      if (method.isAnnotationPresent(Factory.class)) {
+        Preconditions.checkArgument(!factoryCache.containsKey(clazz), "Cannot have multiple factory methods on class", method);
+        Preconditions.checkArgument(method.getReturnType().isAssignableFrom(clazz), "Factory method return type must be assignable to the owner type", method);
+        Preconditions.checkArgument(method.getParameterCount() == 0, "Factory method cannot take parameters", method);
         method.setAccessible(true);
-        factoryCache.put(clazz, method);
-        break;
+        factoryCache.put(clazz, () -> method.invoke(null));
       }
     }
-    // TODO constructors
+    
+    // Find factory constructor
+    try {
+      Constructor<?> ctor = clazz.getDeclaredConstructor();
+      boolean hasAnnotation = ctor.isAnnotationPresent(Factory.class);
+      if (Modifier.isPublic(ctor.getModifiers()) || hasAnnotation) {
+        if (!factoryCache.containsKey(clazz)) {
+          ctor.setAccessible(true);
+          factoryCache.put(clazz, ctor::newInstance);
+        } else if (hasAnnotation) {
+          throw new IllegalArgumentException("Cannot have a Factory constructor and a Factory method in the same class (" + clazz + ")");
+        }
+      }
+    } catch (NoSuchMethodException | SecurityException ignored) {}
+    
+    // Give helpful error if constructor is mis-annotated
+    for (Constructor<?> ctor : clazz.getDeclaredConstructors()) {
+      if (ctor.isAnnotationPresent(Factory.class)) {
+        Preconditions.checkArgument(ctor.getParameterCount() == 0, "Factory constructor cannot take parameters", ctor);
+      }
+    }
+    
+    List<AfterReadCallback> callbacks = new ArrayList<>();
+    findCallbacks(clazz, callbacks);
 
     Class<?> superclazz = clazz.getSuperclass();
     if (superclazz != null) {
@@ -261,39 +331,38 @@ public class StorableEngine {
           }
         }
       }
+      // Callbacks are called up the hierarchy for subclasses
+      callbacks.addAll(callbackCache.get(superclazz));
     }
 
     fieldCache.put(clazz, fieldList);
   }
-
-  public @Nullable Object instanciate_impl(Type type) {
-    Class<?> clazz = TypeUtil.toClass(type);
-    Object result = null;
-    if (factoryCache.containsKey(clazz)) {
-      Method method = factoryCache.get(clazz);
-      try {
-        result = method.invoke(null);
-        if (result != null) {
-          return result;
-        }
-      } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+  
+  private void findCallbacks(Class<?> clazz, List<AfterReadCallback> callbacks) throws IllegalArgumentException {
+    for (Method m : clazz.getDeclaredMethods()) {
+      if (m.isAnnotationPresent(AfterRead.class)) { 
+        callbacks.add(new AfterReadCallback(m));
       }
     }
-
-    try {
-      result = clazz.newInstance();
-    } catch (InstantiationException | IllegalAccessException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-
-    return result;
   }
 
-  public static @Nullable Object instanciate(Type type) {
-    return INSTANCE.get().instanciate_impl(type);
+  public Object instantiate_impl(Type type) throws IllegalArgumentException {
+    Class<?> clazz = TypeUtil.toClass(type);
+    if (factoryCache.containsKey(clazz)) {
+      ObjectFactory factory = factoryCache.get(clazz);
+      try {
+        Object result = factory.get();
+        Preconditions.checkNotNull(result, "Factory methods cannot return null", clazz);
+        return result;
+      } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        throw new RuntimeException("Failed to invoke factory method or constructor on class " + clazz, e);
+      }
+    }
+    throw new IllegalArgumentException("No factory found for class: " + clazz);
+  }
+
+  public static <T> T instantiate(Type type) throws IllegalArgumentException {
+    return (T) INSTANCE.get().instantiate_impl(type);
   }
 
 }
