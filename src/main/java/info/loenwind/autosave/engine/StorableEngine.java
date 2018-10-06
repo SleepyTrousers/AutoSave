@@ -1,6 +1,5 @@
 package info.loenwind.autosave.engine;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -15,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -348,7 +346,7 @@ public class StorableEngine {
       try {
         cacheHandlers(registry, clazz);
       } catch (NoHandlerFoundException | IllegalAccessException | InstantiationException e) {
-        throw new RuntimeException("Failed to lookup factory for " + clazz);
+        throw new RuntimeException("Failed to lookup factory for " + clazz, e);
       }
     }
     if (factoryCache.containsKey(clazz)) {
