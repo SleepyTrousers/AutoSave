@@ -59,7 +59,7 @@ public class HandleStorable<T extends Object> implements IHandler<T> {
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     if (nbt.hasKey(name)) {
       if (object == null) {
-        object = StorableEngine.instantiate(type);
+        object = StorableEngine.instantiate(registry, type);
       }
       NBTTagCompound tag = NullHelper.notnullM(nbt.getCompoundTag(name), "NBTTagCompound.getCompoundTag()");
       StorableEngine.read(registry, phase, tag, object);
