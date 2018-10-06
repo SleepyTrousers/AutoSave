@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import info.loenwind.autosave.Reader;
 import info.loenwind.autosave.Writer;
+import info.loenwind.autosave.annotations.AfterRead;
 import info.loenwind.autosave.annotations.Factory;
 import info.loenwind.autosave.annotations.Storable;
 import info.loenwind.autosave.annotations.Store;
@@ -140,5 +141,21 @@ public class FailureTests {
   @Test
   public void testInvalidFactoryReturn() {    
     Assertions.assertThrows(IllegalArgumentException.class, () -> Writer.write(new NBTTagCompound(), new InvalidFactoryReturn()));
+  }
+  
+  @Test
+  public void testInvalidAfterReadParams() {
+    class InvalidAfterReadParams {
+      @AfterRead public void onRead(String unused) {}
+    }
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Writer.write(new NBTTagCompound(), new InvalidAfterReadParams()));
+  }
+  
+  @Test
+  public void testInvalidAfterReadReturn() {
+    class InvalidAfterReadReturn {
+      @AfterRead public InvalidAfterReadReturn onRead() { return this; }
+    }
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Writer.write(new NBTTagCompound(), new InvalidAfterReadReturn()));
   }
 }

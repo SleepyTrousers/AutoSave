@@ -75,7 +75,7 @@ public class StorableEngine {
     private final boolean isStatic;
     
     AfterReadCallback(Method m) throws IllegalArgumentException {
-      Preconditions.checkArgument(m.getReturnType() == Void.class, "AfterRead methods cannot return a value", m);
+      Preconditions.checkArgument(m.getReturnType() == void.class, "AfterRead methods cannot return a value", m);
       Preconditions.checkArgument(m.getParameterCount() == 0, "AfterRead methods cannot take parameters", m);
       
       m.setAccessible(true);

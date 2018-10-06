@@ -12,6 +12,7 @@ import com.google.common.collect.Lists;
 
 import info.loenwind.autosave.Reader;
 import info.loenwind.autosave.Writer;
+import info.loenwind.autosave.annotations.AfterRead;
 import info.loenwind.autosave.annotations.Factory;
 import info.loenwind.autosave.annotations.Storable;
 import info.loenwind.autosave.annotations.Store;
@@ -107,5 +108,22 @@ public class CallbackTests {
   @Test
   public void testFactoryMethod() {
     Assertions.assertEquals(before.factoryMethod, after.factoryMethod);
+  }
+  
+  @Test
+  public void testAfterRead() {
+    class CallbackTest {
+      
+      boolean callbackInvoked;
+      
+      @AfterRead
+      public void onRead() {
+        callbackInvoked = true;
+      }
+    }
+    
+    CallbackTest test = new CallbackTest();
+    Reader.read(new NBTTagCompound(), test);
+    Assertions.assertTrue(test.callbackInvoked);
   }
 }
