@@ -340,14 +340,10 @@ public class StorableEngine {
     fieldCache.put(clazz, fieldList);
   }
 
-  public Object instantiate_impl(Registry registry, Type type) throws IllegalArgumentException {
+  public Object instantiate_impl(Registry registry, Type type) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     Class<?> clazz = TypeUtil.toClass(type);
     if (!fieldCache.containsKey(clazz)) {
-      try {
-        cacheHandlers(registry, clazz);
-      } catch (NoHandlerFoundException | IllegalAccessException | InstantiationException e) {
-        throw new RuntimeException("Failed to lookup factory for " + clazz, e);
-      }
+      cacheHandlers(registry, clazz);
     }
     if (factoryCache.containsKey(clazz)) {
       ObjectFactory factory = factoryCache.get(clazz);
@@ -362,7 +358,7 @@ public class StorableEngine {
     throw new IllegalArgumentException("No factory found for " + clazz);
   }
 
-  public static <T> T instantiate(Registry registry, Type type) throws IllegalArgumentException {
+  public static <T> T instantiate(Registry registry, Type type) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     return (T) INSTANCE.get().instantiate_impl(registry, type);
   }
 
