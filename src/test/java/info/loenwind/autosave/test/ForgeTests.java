@@ -9,7 +9,17 @@ import org.junit.jupiter.api.Test;
 import info.loenwind.autosave.Reader;
 import info.loenwind.autosave.Writer;
 import info.loenwind.autosave.annotations.Store;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockBed;
+import net.minecraft.block.BlockChest;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentDamage;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Bootstrap;
+import net.minecraft.init.Enchantments;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBow;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -19,10 +29,29 @@ public class ForgeTests {
   
   private static class Holder {
 
+    // Simple registry objects
+    public @Store Block block;
+    public @Store Item item;
+    public @Store Enchantment ench;
+
+    // Verify registry objects work with subtypes
+    public @Store BlockChest chest;
+    public @Store ItemBow bow;
+    public @Store EnchantmentDamage sharpness;
+
+    // Other forge classes
     public @Store Fluid fluid;
     public @Store FluidStack stack;
 
     void fill() {
+      block = Blocks.BEDROCK;
+      item = Items.APPLE;
+      ench = Enchantments.PROTECTION;
+
+      chest = Blocks.CHEST;
+      bow = Items.BOW;
+      sharpness = (EnchantmentDamage) Enchantments.SHARPNESS;
+      
       fluid = FluidRegistry.LAVA;
       stack = new FluidStack(FluidRegistry.WATER, 534);
     }
@@ -41,7 +70,45 @@ public class ForgeTests {
     Writer.write(tag, before);
     Reader.read(tag, after);
   }
+  
+  @Test
+  public void testUnregistered() {
+    class Unregistered {
+      @Store public Block block = new BlockBed();
+    }
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Writer.write(new NBTTagCompound(), new Unregistered()));
+  }
 
+  @Test
+  public void testBlock() {
+    Assertions.assertSame(before.block, after.block);
+  }
+
+  @Test
+  public void testItem() {
+    Assertions.assertSame(before.item, after.item);
+  }
+  
+  @Test
+  public void testEnchantment() {
+    Assertions.assertSame(before.ench, after.ench);
+  }
+  
+  @Test
+  public void testBlockSubclass() {
+    Assertions.assertSame(before.chest, after.chest);
+  }
+  
+  @Test
+  public void testItemSubclass() {
+    Assertions.assertSame(before.bow, after.bow);
+  }
+  
+  @Test
+  public void testEnchantmentSubclass() {
+    Assertions.assertSame(before.sharpness, after.sharpness);
+  }
+  
   @Test
   public void testFluid() {
     Assertions.assertNotNull(after.fluid);

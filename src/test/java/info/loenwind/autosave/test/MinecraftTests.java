@@ -12,14 +12,12 @@ import org.junit.jupiter.api.Test;
 import info.loenwind.autosave.Reader;
 import info.loenwind.autosave.Writer;
 import info.loenwind.autosave.annotations.Store;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -30,9 +28,7 @@ public class MinecraftTests {
   private static class Holder {
 
     public @Store BlockPos pos;
-    public @Store Block block;
     public @Store IBlockState state;
-    public @Store Item item;
     public @Store ItemStack stack;
     public @Store ResourceLocation resloc;
     
@@ -42,9 +38,7 @@ public class MinecraftTests {
 
     void fill() {
       pos = new BlockPos(867, 5, 309);
-      block = Blocks.BEDROCK;
       state = Blocks.WOOL.getDefaultState().withProperty(BlockColored.COLOR, EnumDyeColor.PURPLE);
-      item = Items.APPLE;
       stack = new ItemStack(Items.GOLDEN_APPLE, 32, 1);
       resloc = new ResourceLocation("fancy", "strings");
       
@@ -71,11 +65,6 @@ public class MinecraftTests {
   public void testBlockPos() {
     Assertions.assertEquals(before.pos, after.pos);
   }
-  
-  @Test
-  public void testBlock() {
-    Assertions.assertSame(before.block, after.block);
-  }
 
   @Test
   public void testBlockState() {
@@ -85,11 +74,6 @@ public class MinecraftTests {
   @Test
   public void testResourceLocation() {
     Assertions.assertEquals(before.resloc, after.resloc);
-  }
-
-  @Test
-  public void testItem() {
-    Assertions.assertSame(before.item, after.item);
   }
   
   private boolean compareStacks(ItemStack i1, ItemStack i2) {

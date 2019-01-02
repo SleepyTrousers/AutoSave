@@ -16,6 +16,7 @@ import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.handlers.forge.HandleFluid;
 import info.loenwind.autosave.handlers.forge.HandleFluidStack;
+import info.loenwind.autosave.handlers.forge.HandleRegistryEntry;
 import info.loenwind.autosave.handlers.internal.HandleStorable;
 import info.loenwind.autosave.handlers.java.HandleArrayList;
 import info.loenwind.autosave.handlers.java.HandleArrays;
@@ -28,11 +29,8 @@ import info.loenwind.autosave.handlers.java.HandleHashSet;
 import info.loenwind.autosave.handlers.java.HandlePrimitive;
 import info.loenwind.autosave.handlers.java.HandleString;
 import info.loenwind.autosave.handlers.java.util.HandleSimpleCollection;
-import info.loenwind.autosave.handlers.minecraft.HandleBlock;
 import info.loenwind.autosave.handlers.minecraft.HandleBlockPos;
-import info.loenwind.autosave.handlers.minecraft.HandleEnchantment;
 import info.loenwind.autosave.handlers.minecraft.HandleIBlockState;
-import info.loenwind.autosave.handlers.minecraft.HandleItem;
 import info.loenwind.autosave.handlers.minecraft.HandleItemStack;
 import info.loenwind.autosave.handlers.util.DelegatingHandler;
 import info.loenwind.autosave.util.BitUtil;
@@ -197,11 +195,9 @@ public class Registry {
     } catch (NoHandlerFoundException e) {}
 
     // Minecraft basic types
+    GLOBAL_REGISTRY.register(new HandleRegistryEntry());
     GLOBAL_REGISTRY.register(new HandleItemStack());
-    GLOBAL_REGISTRY.register(new HandleItem());
-    GLOBAL_REGISTRY.register(new HandleEnchantment());
     GLOBAL_REGISTRY.register(new HandleBlockPos());
-    GLOBAL_REGISTRY.register(new HandleBlock());
     GLOBAL_REGISTRY.register(new HandleIBlockState());
     GLOBAL_REGISTRY.register(new DelegatingHandler<>(ResourceLocation.class, new HandleString(), ResourceLocation::toString, ResourceLocation::new));
 
