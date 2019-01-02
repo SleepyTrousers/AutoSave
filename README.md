@@ -114,15 +114,15 @@ Writer.write(registry, tag, new Wrapper());
 
 #### Minecraft
 
+- Block, Item, Enchantment, etc. are supported by the generic [registry object handler](#forge)
 - BlockPos
-- Block
 - IBlockState
-- Item
 - ItemStack
 - ResourceLocation
 
 #### Forge
 
+- All registry objects (Item, Block, Biome, Enchantment, etc.)
 - Fluid
 - FluidStack
 
