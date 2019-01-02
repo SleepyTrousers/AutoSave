@@ -30,6 +30,7 @@ import info.loenwind.autosave.handlers.java.HandleString;
 import info.loenwind.autosave.handlers.java.util.HandleSimpleCollection;
 import info.loenwind.autosave.handlers.minecraft.HandleBlock;
 import info.loenwind.autosave.handlers.minecraft.HandleBlockPos;
+import info.loenwind.autosave.handlers.minecraft.HandleEnchantment;
 import info.loenwind.autosave.handlers.minecraft.HandleIBlockState;
 import info.loenwind.autosave.handlers.minecraft.HandleItem;
 import info.loenwind.autosave.handlers.minecraft.HandleItemStack;
@@ -198,6 +199,7 @@ public class Registry {
     // Minecraft basic types
     GLOBAL_REGISTRY.register(new HandleItemStack());
     GLOBAL_REGISTRY.register(new HandleItem());
+    GLOBAL_REGISTRY.register(new HandleEnchantment());
     GLOBAL_REGISTRY.register(new HandleBlockPos());
     GLOBAL_REGISTRY.register(new HandleBlock());
     GLOBAL_REGISTRY.register(new HandleIBlockState());
