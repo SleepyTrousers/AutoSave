@@ -40,6 +40,8 @@ public class CollectionTests {
     public @Store Map<String, Integer> intMap;
     public @Store EnumMap<EnumFacing, String> facingMap;
     public @Store EnumMap<EnumFacing, EnumFacing> facing2facing;
+    
+    public @Store Map<String, List<Map<Integer, EnumSet<EnumFacing>>>> insanity;
 
     void fill() {
       strings = Lists.newArrayList("foo", "bar");
@@ -60,6 +62,11 @@ public class CollectionTests {
       facing2facing = new EnumMap<>(EnumFacing.class);
       facing2facing.put(EnumFacing.UP, EnumFacing.DOWN);
       facing2facing.put(EnumFacing.EAST, EnumFacing.WEST);
+      
+      Map<Integer, EnumSet<EnumFacing>> innerMap = new HashMap<>();
+      innerMap.put(42, EnumSet.of(EnumFacing.NORTH, EnumFacing.SOUTH));
+      insanity = new HashMap<>();
+      insanity.put("insane", Lists.newArrayList(innerMap));
     }
 
   }
@@ -119,5 +126,10 @@ public class CollectionTests {
   @Test
   public void testEnum2EnumMap() {
     Assertions.assertEquals(before.facing2facing, after.facing2facing);
+  }
+  
+  @Test
+  public void testNestedGenerics() {
+    Assertions.assertEquals(before.insanity, after.insanity);
   }
 }
