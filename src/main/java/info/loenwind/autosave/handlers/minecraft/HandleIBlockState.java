@@ -27,7 +27,7 @@ public class HandleIBlockState implements IHandler<IBlockState> {
   @Override
   public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, IBlockState object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    NBTTagCompound tag = VersionProxy.WRITE_BLOCKSTATE.getFunction().apply(object);
+    NBTTagCompound tag = VersionProxy.WRITE_BLOCKSTATE.get().apply(object);
     nbt.setTag(name, tag);
     return true;
   }

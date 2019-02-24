@@ -12,6 +12,7 @@ import info.loenwind.autosave.engine.StorableEngine;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.util.HandleGenericType;
 import info.loenwind.autosave.util.NBTAction;
+import info.loenwind.autosave.util.VersionProxy;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants;
@@ -45,7 +46,7 @@ public abstract class HandleMap<T extends Map> extends HandleGenericType<T> {
       } else {
         etag.setBoolean("val" + StorableEngine.NULL_POSTFIX, true);
       }
-      tag.appendTag(etag);
+      VersionProxy.NBTTAGLIST_ADD.get().accept(tag, etag);
     }
     nbt.setTag(name, tag);
     return true;
@@ -62,7 +63,7 @@ public abstract class HandleMap<T extends Map> extends HandleGenericType<T> {
       }
 
       NBTTagList tag = nbt.getTagList(name, Constants.NBT.TAG_COMPOUND);
-      for (int i = 0; i < tag.tagCount(); i++) {
+      for (int i = 0; i < VersionProxy.NBTTAGLIST_SIZE.get().applyAsInt(tag); i++) {
         NBTTagCompound etag = tag.getCompoundTagAt(i);
         Object key = etag.getBoolean("key" + StorableEngine.NULL_POSTFIX) ? null : readRecursive(0, registry, phase, etag, "key", null);
         Object val = etag.getBoolean("val" + StorableEngine.NULL_POSTFIX) ? null : readRecursive(1, registry, phase, etag, "val", null);

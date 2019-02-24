@@ -4,13 +4,18 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
+import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 
 import javax.annotation.Nonnull;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTUtil;
 
 public class VersionProxy<T> {
@@ -38,7 +43,7 @@ public class VersionProxy<T> {
     this.func = func;
   }
 
-  public T getFunction() {
+  public T get() {
     return func;
   }
   
@@ -111,5 +116,35 @@ public class VersionProxy<T> {
       }
     }
     return new ItemStack(t);
+  });
+
+  /**
+   * In 1.13 NBT collections (NBTTagList, NBTTagIntArray) were refactored to
+   * extend List<INBTBase>, so we add some proxies for the methods we use to
+   * just cast and call the List method.
+   */
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public static final VersionProxy<BiConsumer<@NonnullType NBTTagList, @NonnullType Object>> NBTTAGLIST_ADD = new VersionProxy<>((tag, obj) -> {
+    switch(VERSION) {
+    default:
+    case BEFORE_1_13:
+      tag.appendTag((NBTBase) obj);
+      break;
+    case V1_13_x:
+      ((List) tag).add(obj);
+      return;
+    }
+  });
+  
+  @SuppressWarnings("rawtypes")
+  public static final VersionProxy<ToIntFunction<@NonnullType NBTTagList>> NBTTAGLIST_SIZE = new VersionProxy<>(tag -> {
+    switch(VERSION) {
+    default:
+    case BEFORE_1_13:
+      return (int) tag.tagCount();
+    case V1_13_x:
+      return ((List) tag).size();
+    }
   });
 }

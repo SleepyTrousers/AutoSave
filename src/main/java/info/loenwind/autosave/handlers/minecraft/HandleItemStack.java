@@ -42,7 +42,7 @@ public class HandleItemStack implements IHandler<ItemStack> {
       @Nullable ItemStack object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     if (nbt.hasKey(name)) {
       NBTTagCompound tag = nbt.getCompoundTag(name);
-      return VersionProxy.READ_ITEMSTACK.getFunction().apply(tag);
+      return VersionProxy.READ_ITEMSTACK.get().apply(tag);
     } else if (nbt.hasKey(name + StorableEngine.EMPTY_POSTFIX)) {
       return ItemStack.EMPTY;
     }
