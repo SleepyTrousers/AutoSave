@@ -10,6 +10,7 @@ import info.loenwind.autosave.engine.StorableEngine;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.NBTAction;
+import info.loenwind.autosave.util.VersionProxy;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -41,7 +42,7 @@ public class HandleItemStack implements IHandler<ItemStack> {
       @Nullable ItemStack object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     if (nbt.hasKey(name)) {
       NBTTagCompound tag = nbt.getCompoundTag(name);
-      return new ItemStack(tag);
+      return VersionProxy.READ_ITEMSTACK.getFunction().apply(tag);
     } else if (nbt.hasKey(name + StorableEngine.EMPTY_POSTFIX)) {
       return ItemStack.EMPTY;
     }
