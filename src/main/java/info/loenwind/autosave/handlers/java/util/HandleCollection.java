@@ -16,8 +16,8 @@ import net.minecraft.nbt.NBTTagCompound;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class HandleCollection<T extends Collection> extends HandleGenericType<T> {
   
-  public HandleCollection(Class<? extends T> clazz) throws NoHandlerFoundException { 
-    this(clazz, Registry.GLOBAL_REGISTRY, new Type[0]); 
+  public HandleCollection(Class<? extends T> clazz) { 
+    super(clazz);
   }
 
   protected HandleCollection(Class<? extends T> clazz, Registry registry, Type... types) throws NoHandlerFoundException {

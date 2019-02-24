@@ -20,8 +20,8 @@ import net.minecraftforge.common.util.Constants;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class HandleMap<T extends Map> extends HandleGenericType<T> {
   
-  protected HandleMap(Class<? extends T> clazz) throws NoHandlerFoundException {
-    this(clazz, Registry.GLOBAL_REGISTRY, new Type[0]);
+  protected HandleMap(Class<? extends T> clazz) {
+    super(clazz);
   }
 
   protected HandleMap(Class<? extends T> clazz, Registry registry, Type... types) throws NoHandlerFoundException {
