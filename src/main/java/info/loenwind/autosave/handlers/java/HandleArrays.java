@@ -14,7 +14,7 @@ import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.NBTAction;
 import info.loenwind.autosave.util.NullHelper;
 import info.loenwind.autosave.util.TypeUtil;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class HandleArrays implements IHandler<Object> {
@@ -48,11 +48,11 @@ public class HandleArrays implements IHandler<Object> {
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, Object object)
+  public boolean store(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name, Object object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    NBTTagCompound tag = new NBTTagCompound();
+    CompoundNBT tag = new CompoundNBT();
     int size = Array.getLength(object);
-    tag.setInteger("size", size);
+    tag.putInt("size", size);
     for (int i = 0; i < size; i++) {
       Object elem = Array.get(object, i);
       if (elem != null) {
@@ -63,28 +63,28 @@ public class HandleArrays implements IHandler<Object> {
         }
       }
     }
-    nbt.setTag(name, tag);
+    nbt.put(name, tag);
     return true;
   }
 
   @Override
   @Nullable
-  public Object read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, @Nullable Object object)
+  public Object read(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name, @Nullable Object object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     Type compType = componentType;
     if (compType == null) {
       return null;
     }
-    if (nbt.hasKey(name)) {
-      NBTTagCompound tag = nbt.getCompoundTag(name);
-      int size = tag.getInteger("size");
+    if (nbt.contains(name)) {
+      CompoundNBT tag = nbt.getCompound(name);
+      int size = tag.getInt("size");
       
       if (object == null) {
         object = Array.newInstance(TypeUtil.toClass(compType), size);
       }
 
       for (int i = 0; i < size; i++) {
-        if (tag.hasKey(i + "")) {
+        if (tag.contains(i + "")) {
           for (IHandler handler : componentHandlers) {
             Object result = handler.read(registry, phase, tag, compType, i + "", null);
             if (result != null) {

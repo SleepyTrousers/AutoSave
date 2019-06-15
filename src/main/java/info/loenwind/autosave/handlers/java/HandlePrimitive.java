@@ -11,19 +11,19 @@ import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.NBTAction;
 import info.loenwind.autosave.util.NonnullType;
 import info.loenwind.autosave.util.TypeUtil;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 public class HandlePrimitive<T> implements IHandler<T> {
   
   public interface WriterFunc<@NonnullType T> {
     
-    void set(NBTTagCompound tag, String name, @Nullable T object);
+    void set(CompoundNBT tag, String name, @Nullable T object);
     
   }
   
   public interface ReaderFunc<@NonnullType T> {
     
-    T get(NBTTagCompound tag, String name);
+    T get(CompoundNBT tag, String name);
     
   }
   
@@ -50,16 +50,16 @@ public class HandlePrimitive<T> implements IHandler<T> {
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
+  public boolean store(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name,
       T object) throws IllegalArgumentException, IllegalAccessException {
     writer.set(nbt, name, object);
     return true;
   }
 
   @Override
-  public @Nullable T read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
+  public @Nullable T read(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name,
       @Nullable T object) {
-    return nbt.hasKey(name) ? reader.get(nbt, name) : object != null ? object : defaultValue;
+    return nbt.contains(name) ? reader.get(nbt, name) : object != null ? object : defaultValue;
   }
 
 }

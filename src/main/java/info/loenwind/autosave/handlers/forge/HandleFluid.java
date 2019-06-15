@@ -1,3 +1,4 @@
+/*
 package info.loenwind.autosave.handlers.forge;
 
 import java.lang.reflect.Type;
@@ -9,7 +10,7 @@ import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.NBTAction;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
@@ -24,7 +25,7 @@ public class HandleFluid implements IHandler<Fluid> {
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, Fluid object)
+  public boolean store(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name, Fluid object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     String fluidName = FluidRegistry.getFluidName(object);
     if (fluidName == null) {
@@ -35,9 +36,10 @@ public class HandleFluid implements IHandler<Fluid> {
   }
 
   @Override
-  public @Nullable Fluid read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
+  public @Nullable Fluid read(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name,
       @Nullable Fluid object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    return nbt.hasKey(name) ? FluidRegistry.getFluid(nbt.getString(name)) : object;
+    return nbt.contains(name) ? FluidRegistry.getFluid(nbt.getString(name)) : object;
   }
 
 }
+*/

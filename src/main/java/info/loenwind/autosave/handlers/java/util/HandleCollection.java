@@ -11,7 +11,7 @@ import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.handlers.util.HandleGenericType;
 import info.loenwind.autosave.util.NBTAction;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class HandleCollection<T extends Collection> extends HandleGenericType<T> {
@@ -25,10 +25,10 @@ public abstract class HandleCollection<T extends Collection> extends HandleGener
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, T object)
+  public boolean store(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name, T object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    NBTTagCompound tag = new NBTTagCompound();
-    tag.setInteger("size", object.size());
+    CompoundNBT tag = new CompoundNBT();
+    tag.putInt("size", object.size());
     int i = 0;
     for (Object elem : object) {
       if (elem != null) {
@@ -38,22 +38,22 @@ public abstract class HandleCollection<T extends Collection> extends HandleGener
       }
       i++;
     }
-    nbt.setTag(name, tag);
+    nbt.put(name, tag);
     return true;
   }
 
   @Override
-  public @Nullable T read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
+  public @Nullable T read(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name,
       @Nullable T object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    if (nbt.hasKey(name)) {
+    if (nbt.contains(name)) {
       if (object == null) {
         object = makeCollection();
       } else {
         object.clear();
       }
 
-      NBTTagCompound tag = nbt.getCompoundTag(name);
-      int size = tag.getInteger("size");
+      CompoundNBT tag = nbt.getCompound(name);
+      int size = tag.getInt("size");
       for (int i = 0; i < size; i++) {
         object.add(readRecursive(0, registry, phase, tag, i + "", null));
       }

@@ -9,7 +9,7 @@ import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.NBTAction;
 import info.loenwind.autosave.util.TypeUtil;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
 
 public class HandleEnum implements IHandler<Enum<?>> {
@@ -23,19 +23,19 @@ public class HandleEnum implements IHandler<Enum<?>> {
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
+  public boolean store(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name,
       Enum<?> object) throws IllegalArgumentException, IllegalAccessException {
-    nbt.setInteger(name, object.ordinal());
+    nbt.putInt(name, object.ordinal());
     return true;
   }
 
   @Override
-  public @Nullable Enum<?> read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
+  public @Nullable Enum<?> read(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name,
       @Nullable Enum<?> object) {
-    if (nbt.hasKey(name)) {
+    if (nbt.contains(name)) {
       Enum<?>[] enumConstants = (Enum<?>[]) TypeUtil.toClass(type).getEnumConstants();
       if (enumConstants != null) { // This should be "impossible"
-        return enumConstants[MathHelper.clamp(nbt.getInteger(name), 0, enumConstants.length - 1)];
+        return enumConstants[MathHelper.clamp(nbt.getInt(name), 0, enumConstants.length - 1)];
       }
     }
     return object;

@@ -9,7 +9,7 @@ import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.NBTAction;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.fluids.FluidStack;
 
 public class HandleFluidStack implements IHandler<FluidStack> {
@@ -23,19 +23,19 @@ public class HandleFluidStack implements IHandler<FluidStack> {
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, FluidStack object)
+  public boolean store(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name, FluidStack object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    NBTTagCompound tag = new NBTTagCompound();
+    CompoundNBT tag = new CompoundNBT();
     object.writeToNBT(tag);
-    nbt.setTag(name, tag);
+    nbt.put(name, tag);
     return false;
   }
 
   @Override
-  public @Nullable FluidStack read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
+  public @Nullable FluidStack read(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name,
       @Nullable FluidStack object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    if (nbt.hasKey(name)) {
-      return FluidStack.loadFluidStackFromNBT(nbt.getCompoundTag(name));
+    if (nbt.contains(name)) {
+      return FluidStack.loadFluidStackFromNBT(nbt.getCompound(name));
     }
     return null;
   }

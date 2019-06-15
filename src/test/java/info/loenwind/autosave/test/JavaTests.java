@@ -9,9 +9,8 @@ import org.junit.jupiter.api.Test;
 import info.loenwind.autosave.Reader;
 import info.loenwind.autosave.Writer;
 import info.loenwind.autosave.annotations.Store;
-import net.minecraft.init.Bootstrap;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 
 public class JavaTests {
 
@@ -27,7 +26,7 @@ public class JavaTests {
     public @Store double  doubly;
 
     public @Store String     string;
-    public @Store EnumFacing facing;
+    public @Store Direction facing;
 
     void fill() {
       bool = true;
@@ -40,7 +39,7 @@ public class JavaTests {
       doubly = Math.PI * 2;
       
       string = "Hello World!";
-      facing = EnumFacing.WEST;
+      facing = Direction.WEST;
     }
 
   }
@@ -50,11 +49,10 @@ public class JavaTests {
   @BeforeAll
   public static void setup() {
 //    Log.enableExtremelyDetailedNBTActivity("AutoStoreTests", true);
-    Bootstrap.register();
 
     before.fill();
 
-    NBTTagCompound tag = new NBTTagCompound();
+    CompoundNBT tag = new CompoundNBT();
     Writer.write(tag, before);
     Reader.read(tag, after);
   }

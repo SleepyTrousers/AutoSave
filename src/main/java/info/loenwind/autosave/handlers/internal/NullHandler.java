@@ -9,7 +9,7 @@ import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.NBTAction;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 /**
  * A dummy {@link IHandler} that is used as default value for fields. It will be
@@ -27,13 +27,13 @@ public class NullHandler implements IHandler<NullHandler> {
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
+  public boolean store(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name,
       NullHandler object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     return false;
   }
 
   @Override
-  public @Nullable NullHandler read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type,
+  public @Nullable NullHandler read(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type,
       String name, @Nullable NullHandler object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     return null;

@@ -12,9 +12,8 @@ import info.loenwind.autosave.engine.StorableEngine;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.util.HandleGenericType;
 import info.loenwind.autosave.util.NBTAction;
-import info.loenwind.autosave.util.VersionProxy;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraftforge.common.util.Constants;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -29,42 +28,42 @@ public abstract class HandleMap<T extends Map> extends HandleGenericType<T> {
   }
   
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, T object)
+  public boolean store(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name, T object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    NBTTagList tag = new NBTTagList();
+    ListNBT tag = new ListNBT();
     for (Entry e : (Set<Entry>) object.entrySet()) {
-      NBTTagCompound etag = new NBTTagCompound();
+      CompoundNBT etag = new CompoundNBT();
       Object key = e.getKey();
       if (key != null) {
         storeRecursive(0, registry, phase, etag, "key", key);
       } else {
-        etag.setBoolean("key" + StorableEngine.NULL_POSTFIX, true);
+        etag.putBoolean("key" + StorableEngine.NULL_POSTFIX, true);
       }
       Object val = e.getValue();
       if (val != null) {
         storeRecursive(1, registry, phase, etag, "val", val);
       } else {
-        etag.setBoolean("val" + StorableEngine.NULL_POSTFIX, true);
+        etag.putBoolean("val" + StorableEngine.NULL_POSTFIX, true);
       }
-      VersionProxy.NBTTAGLIST_ADD.get().accept(tag, etag);
+      tag.add(etag);
     }
-    nbt.setTag(name, tag);
+    nbt.put(name, tag);
     return true;
   }
 
   @Override
-  public @Nullable T read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
+  public @Nullable T read(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name,
       @Nullable T object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    if (nbt.hasKey(name)) {
+    if (nbt.contains(name)) {
       if (object == null) {
         object = createMap();
       } else {
         object.clear();
       }
 
-      NBTTagList tag = nbt.getTagList(name, Constants.NBT.TAG_COMPOUND);
-      for (int i = 0; i < VersionProxy.NBTTAGLIST_SIZE.get().applyAsInt(tag); i++) {
-        NBTTagCompound etag = tag.getCompoundTagAt(i);
+      ListNBT tag = nbt.getList(name, Constants.NBT.TAG_COMPOUND);
+      for (int i = 0; i < tag.size(); i++) {
+        CompoundNBT etag = tag.getCompound(i);
         Object key = etag.getBoolean("key" + StorableEngine.NULL_POSTFIX) ? null : readRecursive(0, registry, phase, etag, "key", null);
         Object val = etag.getBoolean("val" + StorableEngine.NULL_POSTFIX) ? null : readRecursive(1, registry, phase, etag, "val", null);
         object.put(key, val);

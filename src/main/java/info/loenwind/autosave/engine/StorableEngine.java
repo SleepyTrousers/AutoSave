@@ -35,7 +35,7 @@ import info.loenwind.autosave.util.Log;
 import info.loenwind.autosave.util.NBTAction;
 import info.loenwind.autosave.util.NullHelper;
 import info.loenwind.autosave.util.TypeUtil;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 /**
  * The thread-safe engine that handles (re-)storing {@link Storable} objects by storing their fields. The fields to (re-)store must be annotated {@link Store}.
@@ -105,17 +105,17 @@ public class StorableEngine {
   private StorableEngine() {
   }
 
-  public static <T> void read(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, T object)
+  public static <T> void read(Registry registry, Set<NBTAction> phase, CompoundNBT tag, T object)
       throws IllegalAccessException, InstantiationException, NoHandlerFoundException {
     INSTANCE.get().read_impl(registry, phase, tag, object);
   }
 
-  public static <T> void store(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, T object)
+  public static <T> void store(Registry registry, Set<NBTAction> phase, CompoundNBT tag, T object)
       throws IllegalAccessException, InstantiationException, NoHandlerFoundException {
     INSTANCE.get().store_impl(registry, phase, tag, object);
   }
 
-  public <T> void read_impl(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, T object)
+  public <T> void read_impl(Registry registry, Set<NBTAction> phase, CompoundNBT tag, T object)
       throws IllegalAccessException, InstantiationException, NoHandlerFoundException {
     Class<? extends Object> clazz = object.getClass();
     if (!fieldCache.containsKey(clazz)) {
@@ -127,7 +127,7 @@ public class StorableEngine {
       if (!Collections.disjoint(phaseCache.get(field), phase)) {
         Object fieldData = field.get(object);
         String fieldName = field.getName();
-        if (!tag.hasKey(fieldName + NULL_POSTFIX) && fieldName != null) {
+        if (!tag.contains(fieldName + NULL_POSTFIX) && fieldName != null) {
           for (IHandler handler : fieldHandlerCache.get(field)) {
             Log.livetraceNBT("Trying to read data for field ", fieldName, " with handler ", handler);
             Object result = handler.read(registry, phase, tag, TypeUtil.getGenericType(field), fieldName, fieldData);
@@ -138,7 +138,7 @@ public class StorableEngine {
             }
           }
         } else {
-          Log.livetraceNBT("Field ", fieldName, " is set to null. NULL_POSTFIX=", tag.hasKey(fieldName + NULL_POSTFIX));
+          Log.livetraceNBT("Field ", fieldName, " is set to null. NULL_POSTFIX=", tag.contains(fieldName + NULL_POSTFIX));
           field.set(object, null);
         }
       } else {
@@ -167,7 +167,7 @@ public class StorableEngine {
     Log.livetraceNBT("Read NBT data for object ", object, " of class ", clazz);
   }
 
-  public <T> void store_impl(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, T object)
+  public <T> void store_impl(Registry registry, Set<NBTAction> phase, CompoundNBT tag, T object)
       throws IllegalAccessException, InstantiationException, NoHandlerFoundException {
     Class<? extends Object> clazz = object.getClass();
     if (!fieldCache.containsKey(clazz)) {
@@ -189,7 +189,7 @@ public class StorableEngine {
           }
         } else {
           Log.livetraceNBT("Field ", fieldName, " is null. Setting NULL_POSTFIX.");
-          tag.setBoolean(fieldName + NULL_POSTFIX, true);
+          tag.putBoolean(fieldName + NULL_POSTFIX, true);
         }
       } else {
         Log.livetraceNBT("Field ", field.getName(), " is not part of the current phase.");
@@ -210,9 +210,9 @@ public class StorableEngine {
     Log.livetraceNBT("Saved NBT data for object ", object, " of class ", clazz);
   }
 
-  public static @Nullable <T> T getSingleField(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, String fieldName,
+  public static @Nullable <T> T getSingleField(Registry registry, Set<NBTAction> phase, CompoundNBT tag, String fieldName,
       Type type, @Nullable T object) throws InstantiationException, IllegalAccessException, IllegalArgumentException, NoHandlerFoundException {
-    if (!tag.hasKey(fieldName + NULL_POSTFIX)) {
+    if (!tag.contains(fieldName + NULL_POSTFIX)) {
       for (IHandler<T> handler : registry.findHandlers(type)) {
         T result = handler.read(registry, phase, tag, type, fieldName, object);
         if (result != null) {
@@ -223,10 +223,10 @@ public class StorableEngine {
     return null;
   }
 
-  public static <T> void setSingleField(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, String fieldName,
+  public static <T> void setSingleField(Registry registry, Set<NBTAction> phase, CompoundNBT tag, String fieldName,
       Type fieldType, @Nullable T fieldData) throws InstantiationException, IllegalAccessException, IllegalArgumentException, NoHandlerFoundException {
     if (fieldData != null) {
-      tag.removeTag(fieldName + NULL_POSTFIX);
+      tag.remove(fieldName + NULL_POSTFIX);
       for (IHandler<T> handler : registry.findHandlers(fieldType)) {
         if (handler.store(registry, phase, tag, fieldType, fieldName, fieldData)) {
           return;
@@ -234,8 +234,8 @@ public class StorableEngine {
       }
       throw new NoHandlerFoundException(fieldType, fieldName);
     } else {
-      tag.removeTag(fieldName);
-      tag.setBoolean(fieldName + NULL_POSTFIX, true);
+      tag.remove(fieldName);
+      tag.putBoolean(fieldName + NULL_POSTFIX, true);
       return;
     }
   }

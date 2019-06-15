@@ -15,7 +15,7 @@ import info.loenwind.autosave.annotations.Factory;
 import info.loenwind.autosave.annotations.Storable;
 import info.loenwind.autosave.annotations.Store;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 public class FailureTests {
   
@@ -73,7 +73,7 @@ public class FailureTests {
     
   private void testFails(@Nonnull Object toWrite) {
     try {
-      Writer.write(new NBTTagCompound(), toWrite);
+      Writer.write(new CompoundNBT(), toWrite);
     } catch (RuntimeException e) {
       if (e.getCause() instanceof NoHandlerFoundException) {
         return;
@@ -108,7 +108,7 @@ public class FailureTests {
       private NoFactory noFactory;
     }
     
-    NBTTagCompound tag = new NBTTagCompound();
+    CompoundNBT tag = new CompoundNBT();
     Holder toWrite = new Holder();
     toWrite.noFactory = new NoFactory("foo");
     Writer.write(tag, toWrite);
@@ -117,17 +117,17 @@ public class FailureTests {
   
   @Test
   public void testDoubleFactory() {    
-    Assertions.assertThrows(IllegalArgumentException.class, () -> Writer.write(new NBTTagCompound(), new DoubleFactory()));
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Writer.write(new CompoundNBT(), new DoubleFactory()));
   }
   
   @Test
   public void testDoubleFactoryCtor() {    
-    Assertions.assertThrows(IllegalArgumentException.class, () -> Writer.write(new NBTTagCompound(), new DoubleFactoryCtor()));
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Writer.write(new CompoundNBT(), new DoubleFactoryCtor()));
   }
   
   @Test
   public void testInvalidFactoryParams() {    
-    Assertions.assertThrows(IllegalArgumentException.class, () -> Writer.write(new NBTTagCompound(), new InvalidFactoryParams()));
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Writer.write(new CompoundNBT(), new InvalidFactoryParams()));
   }
   
   @Test
@@ -135,12 +135,12 @@ public class FailureTests {
     class InvalidFactoryCtorParams {
       @Factory InvalidFactoryCtorParams(String parameter) {}
     }
-    Assertions.assertThrows(IllegalArgumentException.class, () -> Writer.write(new NBTTagCompound(), new InvalidFactoryCtorParams("foo")));
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Writer.write(new CompoundNBT(), new InvalidFactoryCtorParams("foo")));
   }
   
   @Test
   public void testInvalidFactoryReturn() {    
-    Assertions.assertThrows(IllegalArgumentException.class, () -> Writer.write(new NBTTagCompound(), new InvalidFactoryReturn()));
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Writer.write(new CompoundNBT(), new InvalidFactoryReturn()));
   }
   
   @Test
@@ -148,7 +148,7 @@ public class FailureTests {
     class InvalidAfterReadParams {
       @AfterRead public void onRead(String unused) {}
     }
-    Assertions.assertThrows(IllegalArgumentException.class, () -> Writer.write(new NBTTagCompound(), new InvalidAfterReadParams()));
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Writer.write(new CompoundNBT(), new InvalidAfterReadParams()));
   }
   
   @Test
@@ -156,6 +156,6 @@ public class FailureTests {
     class InvalidAfterReadReturn {
       @AfterRead public InvalidAfterReadReturn onRead() { return this; }
     }
-    Assertions.assertThrows(IllegalArgumentException.class, () -> Writer.write(new NBTTagCompound(), new InvalidAfterReadReturn()));
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Writer.write(new CompoundNBT(), new InvalidAfterReadReturn()));
   }
 }

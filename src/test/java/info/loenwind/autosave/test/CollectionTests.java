@@ -24,8 +24,8 @@ import info.loenwind.autosave.Writer;
 import info.loenwind.autosave.annotations.Store;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.handlers.java.HandleEnum2EnumMap;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 
 public class CollectionTests {
 
@@ -35,13 +35,13 @@ public class CollectionTests {
     public @Store LinkedList<String> linkedListStrings;
 
     public @Store Set<String> stringSet;
-    public @Store EnumSet<EnumFacing> enumSet;
+    public @Store EnumSet<Direction> enumSet;
     
     public @Store Map<String, Integer> intMap;
-    public @Store EnumMap<EnumFacing, String> facingMap;
-    public @Store EnumMap<EnumFacing, EnumFacing> facing2facing;
+    public @Store EnumMap<Direction, String> facingMap;
+    public @Store EnumMap<Direction, Direction> facing2facing;
     
-    public @Store Map<String, List<Map<Integer, EnumSet<EnumFacing>>>> insanity;
+    public @Store Map<String, List<Map<Integer, EnumSet<Direction>>>> insanity;
 
     void fill() {
       strings = Lists.newArrayList("foo", "bar");
@@ -53,18 +53,18 @@ public class CollectionTests {
       
       stringSet = Sets.newHashSet("unique", "elements", "only");
       
-      enumSet = EnumSet.of(EnumFacing.UP, EnumFacing.WEST, EnumFacing.EAST);
+      enumSet = EnumSet.of(Direction.UP, Direction.WEST, Direction.EAST);
       
-      facingMap = new EnumMap<>(EnumFacing.class);
-      facingMap.put(EnumFacing.UP, "up");
-      facingMap.put(EnumFacing.DOWN, "down");
+      facingMap = new EnumMap<>(Direction.class);
+      facingMap.put(Direction.UP, "up");
+      facingMap.put(Direction.DOWN, "down");
       
-      facing2facing = new EnumMap<>(EnumFacing.class);
-      facing2facing.put(EnumFacing.UP, EnumFacing.DOWN);
-      facing2facing.put(EnumFacing.EAST, EnumFacing.WEST);
+      facing2facing = new EnumMap<>(Direction.class);
+      facing2facing.put(Direction.UP, Direction.DOWN);
+      facing2facing.put(Direction.EAST, Direction.WEST);
       
-      Map<Integer, EnumSet<EnumFacing>> innerMap = new HashMap<>();
-      innerMap.put(42, EnumSet.of(EnumFacing.NORTH, EnumFacing.SOUTH));
+      Map<Integer, EnumSet<Direction>> innerMap = new HashMap<>();
+      innerMap.put(42, EnumSet.of(Direction.NORTH, Direction.SOUTH));
       insanity = new HashMap<>();
       insanity.put("insane", Lists.newArrayList(innerMap));
     }
@@ -79,7 +79,7 @@ public class CollectionTests {
 
     before.fill();
 
-    NBTTagCompound tag = new NBTTagCompound();
+    CompoundNBT tag = new CompoundNBT();
     Writer.write(tag, before);
     Reader.read(tag, after);
   }
@@ -88,7 +88,7 @@ public class CollectionTests {
   @Test
   public void testEnum2EnumHandler() throws InstantiationException, IllegalAccessException {
     @SuppressWarnings("rawtypes")
-    List<IHandler> handlers = Registry.GLOBAL_REGISTRY.findHandlers(new TypeToken<EnumMap<EnumFacing, EnumFacing>>(){}.getType());
+    List<IHandler> handlers = Registry.GLOBAL_REGISTRY.findHandlers(new TypeToken<EnumMap<Direction, Direction>>(){}.getType());
     Assertions.assertTrue(handlers.size() == 2);
     Assertions.assertTrue(handlers.get(0) instanceof HandleEnum2EnumMap);
   }

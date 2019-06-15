@@ -12,7 +12,7 @@ import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.NBTAction;
 import info.loenwind.autosave.util.NullHelper;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 /**
  * Restore an object's fields from NBT data.
@@ -35,12 +35,12 @@ public class Reader {
    *          Only fields that are annotated with a matching {@link NBTAction}
    *          are restored.
    * @param tag
-   *          A {@link NBTTagCompound} to read from. This NBTTagCompound
+   *          A {@link CompoundNBT} to read from. This CompoundNBT
    *          represents the whole object, with its fields in the tags.
    * @param object
    *          The object that should be restored
    */
-  public static <T> void read(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, T object) {
+  public static <T> void read(Registry registry, Set<NBTAction> phase, CompoundNBT tag, T object) {
     try {
       StorableEngine.read(registry, phase, tag, object);
     } catch (IllegalAccessException e) {
@@ -65,12 +65,12 @@ public class Reader {
    *          Only fields that are annotated with a matching {@link NBTAction}
    *          are restored.
    * @param tag
-   *          A {@link NBTTagCompound} to read from. This NBTTagCompound
+   *          A {@link CompoundNBT} to read from. This CompoundNBT
    *          represents the whole object, with its fields in the tags.
    * @param object
    *          The object that should be restored
    */
-  public static <T> void read(@Nullable Set<NBTAction> phase, @Nullable NBTTagCompound tag, T object) {
+  public static <T> void read(@Nullable Set<NBTAction> phase, @Nullable CompoundNBT tag, T object) {
     read(Registry.GLOBAL_REGISTRY, NullHelper.notnull(phase, "Missing phase"), NullHelper.notnull(tag, "Missing NBT"), object);
   }
 
@@ -89,12 +89,12 @@ public class Reader {
    *          fields that are annotated with a matching {@link NBTAction} are
    *          restored.
    * @param tag
-   *          A {@link NBTTagCompound} to read from. This NBTTagCompound
+   *          A {@link CompoundNBT} to read from. This CompoundNBT
    *          represents the whole object, with its fields in the tags.
    * @param object
    *          The object that should be restored
    */
-  public static <T> void read(Registry registry, NBTAction phase, @Nullable NBTTagCompound tag, T object) {
+  public static <T> void read(Registry registry, NBTAction phase, @Nullable CompoundNBT tag, T object) {
     read(registry, NullHelper.notnullJ(EnumSet.of(phase), "EnumSet.of()"), NullHelper.notnull(tag, "Missing NBT"), object);
   }
 
@@ -111,12 +111,12 @@ public class Reader {
    *          fields that are annotated with a matching {@link NBTAction} are
    *          restored.
    * @param tag
-   *          A {@link NBTTagCompound} to read from. This NBTTagCompound
+   *          A {@link CompoundNBT} to read from. This CompoundNBT
    *          represents the whole object, with its fields in the tags.
    * @param object
    *          The object that should be restored
    */
-  public static <T> void read(NBTAction phase, @Nullable NBTTagCompound tag, T object) {
+  public static <T> void read(NBTAction phase, @Nullable CompoundNBT tag, T object) {
     read(Registry.GLOBAL_REGISTRY, NullHelper.notnullJ(EnumSet.of(phase), "EnumSet.of()"), NullHelper.notnull(tag, "Missing NBT"), object);
   }
 
@@ -132,12 +132,12 @@ public class Reader {
    *          The {@link Registry} to look up {@link IHandler}s for the fields
    *          of the given object
    * @param tag
-   *          A {@link NBTTagCompound} to read from. This NBTTagCompound
+   *          A {@link CompoundNBT} to read from. This CompoundNBT
    *          represents the whole object, with its fields in the tags.
    * @param object
    *          The object that should be restored
    */
-  public static <T> void read(Registry registry, @Nullable NBTTagCompound tag, T object) {
+  public static <T> void read(Registry registry, @Nullable CompoundNBT tag, T object) {
     read(registry, NullHelper.notnullJ(EnumSet.allOf(NBTAction.class), "EnumSet.allOf()"), NullHelper.notnull(tag, "Missing NBT"), object);
   }
 
@@ -151,12 +151,12 @@ public class Reader {
    * See also: {@link Store} for the field annotation.
    * 
    * @param tag
-   *          A {@link NBTTagCompound} to read from. This NBTTagCompound
+   *          A {@link CompoundNBT} to read from. This CompoundNBT
    *          represents the whole object, with its fields in the tags.
    * @param object
    *          The object that should be restored
    */
-  public static <T> void read(@Nullable NBTTagCompound tag, T object) {
+  public static <T> void read(@Nullable CompoundNBT tag, T object) {
     read(Registry.GLOBAL_REGISTRY, NullHelper.notnullJ(EnumSet.allOf(NBTAction.class), "EnumSet.allOf()"), NullHelper.notnull(tag, "Missing NBT"), object);
   }
 
@@ -164,7 +164,7 @@ public class Reader {
    * Restore a single field from NBT data.
    * 
    * @param tag
-   *          A {@link NBTTagCompound} to read from. This NBTTagCompound represents the whole object, with its fields in the tags.
+   *          A {@link CompoundNBT} to read from. This CompoundNBT represents the whole object, with its fields in the tags.
    * @param fieldClass
    *          The class of the field (not the whole object)
    * @param fieldName
@@ -173,7 +173,7 @@ public class Reader {
    *          The object that should be restored. May be null if the class's handler supports creating new objects.
    * @return The restored object (which may be null), or the parameter object if nothing was to be restored.
    */
-  public static @Nullable <T> T readField(@Nullable NBTTagCompound tag, @Nullable Class<T> fieldClass, @Nullable String fieldName, @Nullable T object) {
+  public static @Nullable <T> T readField(@Nullable CompoundNBT tag, @Nullable Class<T> fieldClass, @Nullable String fieldName, @Nullable T object) {
     try {
       return StorableEngine.getSingleField(Registry.GLOBAL_REGISTRY, NullHelper.notnullJ(EnumSet.allOf(NBTAction.class), "EnumSet.allOf()"),
           NullHelper.notnull(tag, "Missing NBT"), NullHelper.notnull(fieldName, "Missing field name"), NullHelper.notnull(fieldClass, "Missing field class"),

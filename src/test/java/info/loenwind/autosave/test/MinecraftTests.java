@@ -12,14 +12,13 @@ import org.junit.jupiter.api.Test;
 import info.loenwind.autosave.Reader;
 import info.loenwind.autosave.Writer;
 import info.loenwind.autosave.annotations.Store;
-import net.minecraft.block.BlockColored;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Bootstrap;
-import net.minecraft.init.Items;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.LogBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
@@ -28,7 +27,7 @@ public class MinecraftTests {
   private static class Holder {
 
     public @Store BlockPos pos;
-    public @Store IBlockState state;
+    public @Store BlockState state;
     public @Store ItemStack stack;
     public @Store ResourceLocation resloc;
     
@@ -38,11 +37,11 @@ public class MinecraftTests {
 
     void fill() {
       pos = new BlockPos(867, 5, 309);
-      state = Blocks.WOOL.getDefaultState().withProperty(BlockColored.COLOR, EnumDyeColor.PURPLE);
-      stack = new ItemStack(Items.GOLDEN_APPLE, 32, 1);
+      state = Blocks.OAK_LOG.getDefaultState().with(LogBlock.AXIS, Direction.Axis.Z);
+      stack = new ItemStack(Items.GOLDEN_APPLE, 32);
       resloc = new ResourceLocation("fancy", "strings");
       
-      stackArray = new ItemStack[] { new ItemStack(Items.BEEF), new ItemStack(Items.FISH, 1, 2), new ItemStack(Items.MUTTON) };
+      stackArray = new ItemStack[] { new ItemStack(Items.BEEF), new ItemStack(Items.PUFFERFISH), new ItemStack(Items.MUTTON) };
       stackList = Arrays.asList(stackArray);
     }
   }
@@ -52,11 +51,9 @@ public class MinecraftTests {
   @BeforeAll
   public static void setup() {
     // Log.enableExtremelyDetailedNBTActivity("AutoStoreTests", true);
-    Bootstrap.register();
-    
     before.fill();
 
-    NBTTagCompound tag = new NBTTagCompound();
+    CompoundNBT tag = new CompoundNBT();
     Writer.write(tag, before);
     Reader.read(tag, after);
   }

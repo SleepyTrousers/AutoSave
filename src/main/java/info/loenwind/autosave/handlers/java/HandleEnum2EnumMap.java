@@ -17,7 +17,7 @@ import info.loenwind.autosave.util.NBTAction;
 import info.loenwind.autosave.util.NonnullType;
 import info.loenwind.autosave.util.NullHelper;
 import info.loenwind.autosave.util.TypeUtil;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 /**
  * This is a specialized version of {@link HandleEnumMap}, for maps with enum values as well.
@@ -95,7 +95,7 @@ public class HandleEnum2EnumMap<T extends Enum<T>> extends HandleMap<EnumMap<T, 
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
+  public boolean store(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name,
       EnumMap<T, Enum> object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     long value = 0;
     for (T key : keys) {
@@ -106,15 +106,15 @@ public class HandleEnum2EnumMap<T extends Enum<T>> extends HandleMap<EnumMap<T, 
       }
       value = value | (subvalue << (key.ordinal() * valspace));
     }
-    nbt.setIntArray(name, new int[] {valspace, BitUtil.getLongMSB(value), BitUtil.getLongLSB(value)});
+    nbt.putIntArray(name, new int[] {valspace, BitUtil.getLongMSB(value), BitUtil.getLongLSB(value)});
     return true;
   }
 
   @Override
-  public @Nullable EnumMap read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type,
+  public @Nullable EnumMap read(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type,
       String name, @Nullable EnumMap<T, Enum> object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    if (nbt.hasKey(name)) {
+    if (nbt.contains(name)) {
       if (object == null) {
         object = createMap();
       }

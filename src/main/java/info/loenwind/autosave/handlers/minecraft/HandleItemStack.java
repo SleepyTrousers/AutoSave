@@ -12,7 +12,7 @@ import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.NBTAction;
 import info.loenwind.autosave.util.VersionProxy;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 public class HandleItemStack implements IHandler<ItemStack> {
 
@@ -25,25 +25,25 @@ public class HandleItemStack implements IHandler<ItemStack> {
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, ItemStack object)
+  public boolean store(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name, ItemStack object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     if (object.isEmpty()) {
-      nbt.setBoolean(name + StorableEngine.EMPTY_POSTFIX, true);
+      nbt.putBoolean(name + StorableEngine.EMPTY_POSTFIX, true);
     } else {
-      NBTTagCompound tag = new NBTTagCompound();
-      object.writeToNBT(tag);
-      nbt.setTag(name, tag);
+      CompoundNBT tag = new CompoundNBT();
+      object.write(tag);
+      nbt.put(name, tag);
     }
     return true;
   }
 
   @Override
-  public @Nullable ItemStack read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
+  public @Nullable ItemStack read(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name,
       @Nullable ItemStack object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    if (nbt.hasKey(name)) {
-      NBTTagCompound tag = nbt.getCompoundTag(name);
-      return VersionProxy.READ_ITEMSTACK.get().apply(tag);
-    } else if (nbt.hasKey(name + StorableEngine.EMPTY_POSTFIX)) {
+    if (nbt.contains(name)) {
+      CompoundNBT tag = nbt.getCompound(name);
+      return ItemStack.read(tag);
+    } else if (nbt.contains(name + StorableEngine.EMPTY_POSTFIX)) {
       return ItemStack.EMPTY;
     }
     return object;

@@ -9,7 +9,7 @@ import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.NBTAction;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -28,27 +28,27 @@ public class HandleRegistryEntry implements IHandler<IForgeRegistryEntry> {
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, IForgeRegistryEntry object)
+  public boolean store(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name, IForgeRegistryEntry object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     ResourceLocation loc = object.getRegistryName();
     if (loc == null) {
       throw new IllegalArgumentException("Registry entry must be registered to be stored: " + object);
     }
-    nbt.setString(name, loc.toString());
+    nbt.putString(name, loc.toString());
     @SuppressWarnings("unchecked")
     final IForgeRegistry<?> forgeRegistry = GameRegistry.findRegistry(object.getRegistryType());
     if (forgeRegistry == null) {
       throw new IllegalArgumentException("Registry entry's registry must be registered to be stored: " + object);
     }
-    nbt.setString(name + REGISTRY, RegistryManager.ACTIVE.getName(forgeRegistry).toString());
+    nbt.putString(name + REGISTRY, RegistryManager.ACTIVE.getName(forgeRegistry).toString());
     return true;
   }
 
   @Override
   @Nullable
-  public IForgeRegistryEntry read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, @Nullable IForgeRegistryEntry object)
+  public IForgeRegistryEntry read(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name, @Nullable IForgeRegistryEntry object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    if (nbt.hasKey(name) && nbt.hasKey(name + REGISTRY)) {
+    if (nbt.contains(name) && nbt.contains(name + REGISTRY)) {
       final ResourceLocation registryName = new ResourceLocation(nbt.getString(name + REGISTRY));
       IForgeRegistry forgeRegistry = RegistryManager.ACTIVE.getRegistry(registryName);
       if (forgeRegistry == null) {

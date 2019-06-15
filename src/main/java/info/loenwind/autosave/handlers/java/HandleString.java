@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.NBTAction;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 public class HandleString implements IHandler<String> {
 
@@ -21,16 +21,16 @@ public class HandleString implements IHandler<String> {
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, String object)
+  public boolean store(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name, String object)
       throws IllegalArgumentException, IllegalAccessException {
-    nbt.setString(name, object);
+    nbt.putString(name, object);
     return true;
   }
 
   @Override
-  public @Nullable String read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
+  public @Nullable String read(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name,
       @Nullable String object) {
-    return nbt.hasKey(name) ? nbt.getString(name) : object;
+    return nbt.contains(name) ? nbt.getString(name) : object;
   }
 
 }

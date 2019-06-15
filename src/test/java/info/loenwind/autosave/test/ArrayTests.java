@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 import info.loenwind.autosave.Reader;
 import info.loenwind.autosave.Writer;
 import info.loenwind.autosave.annotations.Store;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 
 public class ArrayTests {
 
@@ -39,7 +39,7 @@ public class ArrayTests {
     public @Store Double[] boxedDoubles;
 
     public @Store String[] strings;
-    public @Store EnumFacing[] enums;
+    public @Store Direction[] enums;
 
     void fill() {
       bytes = new byte[] { 1, -1, Byte.MAX_VALUE, Byte.MIN_VALUE };
@@ -64,7 +64,7 @@ public class ArrayTests {
       boxedDoubles = ArrayUtils.toObject(doubles);
 
       strings = new String[] { "Recursive", "handlers", "are", "cool" };
-      enums = new EnumFacing[] { EnumFacing.UP, EnumFacing.DOWN, EnumFacing.NORTH };
+      enums = new Direction[] { Direction.UP, Direction.DOWN, Direction.NORTH };
     }
   }
 
@@ -76,7 +76,7 @@ public class ArrayTests {
 
     before.fill();
 
-    NBTTagCompound tag = new NBTTagCompound();
+    CompoundNBT tag = new CompoundNBT();
     Writer.write(tag, before);
     Reader.read(tag, after);
   }

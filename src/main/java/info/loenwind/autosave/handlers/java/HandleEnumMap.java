@@ -15,7 +15,7 @@ import info.loenwind.autosave.util.NBTAction;
 import info.loenwind.autosave.util.NonnullType;
 import info.loenwind.autosave.util.NullHelper;
 import info.loenwind.autosave.util.TypeUtil;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class HandleEnumMap<K extends Enum<K>> extends HandleMap<EnumMap<K, ?>>{
@@ -41,31 +41,31 @@ public class HandleEnumMap<K extends Enum<K>> extends HandleMap<EnumMap<K, ?>>{
   }
 
   @Override
-  public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name,
+  public boolean store(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type, String name,
       EnumMap<K, ?> object) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    NBTTagCompound tag = new NBTTagCompound();
+    CompoundNBT tag = new CompoundNBT();
     for (K key : enumValues) {
       Object val = object.get(key);
       String keystr = NullHelper.notnullJ(Integer.toString(key.ordinal()), "Integer.toString is null");
       if (val != null) {
         storeRecursive(1, registry, phase, tag, keystr, val);
       } else {
-        tag.setBoolean(keystr + StorableEngine.NULL_POSTFIX, true);
+        tag.putBoolean(keystr + StorableEngine.NULL_POSTFIX, true);
       }
     }
-    nbt.setTag(name, tag);
+    nbt.put(name, tag);
     return true;
   }
 
   @Override
-  public @Nullable EnumMap<K, ?> read(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type,
+  public @Nullable EnumMap<K, ?> read(Registry registry, Set<NBTAction> phase, CompoundNBT nbt, Type type,
       String name, @Nullable EnumMap<K, ?> object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    if (nbt.hasKey(name)) {
+    if (nbt.contains(name)) {
       if (object == null) {
         object = createMap();
       }
-      NBTTagCompound tag = nbt.getCompoundTag(name);
+      CompoundNBT tag = nbt.getCompound(name);
       for (K key : enumValues) {
         String keystr = NullHelper.notnullJ(Integer.toString(key.ordinal()), "Integer.toString is null");
         if (!tag.getBoolean(keystr + StorableEngine.NULL_POSTFIX)) {

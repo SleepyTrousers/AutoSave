@@ -16,7 +16,7 @@ import info.loenwind.autosave.annotations.AfterRead;
 import info.loenwind.autosave.annotations.Factory;
 import info.loenwind.autosave.annotations.Storable;
 import info.loenwind.autosave.annotations.Store;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 public class CallbackTests {
   
@@ -90,7 +90,7 @@ public class CallbackTests {
 
     before.fill();
 
-    NBTTagCompound tag = new NBTTagCompound();
+    CompoundNBT tag = new CompoundNBT();
     Writer.write(tag, before);
     Reader.read(tag, after);
   }
@@ -123,7 +123,7 @@ public class CallbackTests {
     }
     
     CallbackTest test = new CallbackTest();
-    Reader.read(new NBTTagCompound(), test);
+    Reader.read(new CompoundNBT(), test);
     Assertions.assertTrue(test.callbackInvoked);
   }
 }

@@ -16,7 +16,7 @@ import info.loenwind.autosave.util.NBTAction;
 import info.loenwind.autosave.util.NonnullType;
 import info.loenwind.autosave.util.NullHelper;
 import info.loenwind.autosave.util.TypeUtil;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 @SuppressWarnings("rawtypes")
 public abstract class HandleGenericType<T> implements IHandler<T> {
@@ -90,7 +90,7 @@ public abstract class HandleGenericType<T> implements IHandler<T> {
   }
   
   @SuppressWarnings("unchecked")
-  protected final void storeRecursive(int param, Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, Object object) 
+  protected final void storeRecursive(int param, Registry registry, Set<NBTAction> phase, CompoundNBT nbt, String name, Object object) 
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     for (IHandler handler : subHandlers[param]) {
       if (handler.store(registry, phase, nbt, types[param], name, object)) {
@@ -100,7 +100,7 @@ public abstract class HandleGenericType<T> implements IHandler<T> {
   }
 
   @SuppressWarnings({ "unchecked"})
-  protected final @Nullable <V> V readRecursive(int param, Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, String name, @Nullable V object) 
+  protected final @Nullable <V> V readRecursive(int param, Registry registry, Set<NBTAction> phase, CompoundNBT nbt, String name, @Nullable V object) 
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     for (IHandler handler : subHandlers[param]) {
       V result = (V) handler.read(registry, phase, nbt, types[param], name, object);
