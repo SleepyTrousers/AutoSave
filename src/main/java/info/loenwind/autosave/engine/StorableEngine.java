@@ -60,31 +60,32 @@ public class StorableEngine {
       return new StorableEngine();
     }
   };
-  
+
   @FunctionalInterface
   private interface ObjectFactory {
-    
-    @Nullable Object get() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
-    
+
+    @Nullable
+    Object get() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
+
   }
-  
+
   private static class AfterReadCallback {
     private final Method callback;
     private final boolean isStatic;
-    
+
     AfterReadCallback(Method m) throws IllegalArgumentException {
       Preconditions.checkArgument(m.getReturnType() == void.class, "AfterRead methods cannot return a value", m);
       Preconditions.checkArgument(m.getParameterCount() == 0, "AfterRead methods cannot take parameters", m);
-      
+
       m.setAccessible(true);
       this.callback = m;
       this.isStatic = Modifier.isStatic(m.getModifiers());
     }
-    
+
     public void apply(Object inst) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
       callback.invoke(isStatic ? null : inst);
     }
-    
+
     @Override
     public String toString() {
       return NullHelper.notnullJ(callback.toString(), "Method#toString");
@@ -210,8 +211,8 @@ public class StorableEngine {
     Log.livetraceNBT("Saved NBT data for object ", object, " of class ", clazz);
   }
 
-  public static @Nullable <T> T getSingleField(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, String fieldName,
-      Type type, @Nullable T object) throws InstantiationException, IllegalAccessException, IllegalArgumentException, NoHandlerFoundException {
+  public static @Nullable <T> T getSingleField(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, String fieldName, Type type, @Nullable T object)
+      throws InstantiationException, IllegalAccessException, IllegalArgumentException, NoHandlerFoundException {
     if (!tag.hasKey(fieldName + NULL_POSTFIX)) {
       for (IHandler<T> handler : registry.findHandlers(type)) {
         T result = handler.read(registry, phase, tag, type, fieldName, object);
@@ -223,8 +224,8 @@ public class StorableEngine {
     return null;
   }
 
-  public static <T> void setSingleField(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, String fieldName,
-      Type fieldType, @Nullable T fieldData) throws InstantiationException, IllegalAccessException, IllegalArgumentException, NoHandlerFoundException {
+  public static <T> void setSingleField(Registry registry, Set<NBTAction> phase, NBTTagCompound tag, String fieldName, Type fieldType, @Nullable T fieldData)
+      throws InstantiationException, IllegalAccessException, IllegalArgumentException, NoHandlerFoundException {
     if (fieldData != null) {
       tag.removeTag(fieldName + NULL_POSTFIX);
       for (IHandler<T> handler : registry.findHandlers(fieldType)) {
@@ -282,7 +283,7 @@ public class StorableEngine {
         factoryCache.put(clazz, () -> method.invoke(null));
       }
     }
-    
+
     // Find factory constructor
     try {
       Constructor<?> ctor = clazz.getDeclaredConstructor();
@@ -295,21 +296,24 @@ public class StorableEngine {
           throw new IllegalArgumentException("Cannot have a Factory constructor and a Factory method in the same class (" + clazz + ")");
         }
       }
-    } catch (NoSuchMethodException | SecurityException ignored) {}
-    
+    } catch (NoSuchMethodException | SecurityException ignored) {
+    }
+
     // Give helpful error if constructor is mis-annotated
     for (Constructor<?> ctor : clazz.getDeclaredConstructors()) {
       if (ctor.isAnnotationPresent(Factory.class)) {
         Preconditions.checkArgument(ctor.getParameterCount() == 0, "Factory constructor cannot take parameters", ctor);
       }
     }
-    
+
     Class<?> superclazz = clazz.getSuperclass();
     if (superclazz != null) {
       Storable annotation = superclazz.getAnnotation(Storable.class);
       if (annotation != null) {
         if (annotation.handler() == HandleStorable.class) {
-          cacheHandlers(registry, superclazz);
+          if (!fieldCache.containsKey(superclazz)) {
+            cacheHandlers(registry, superclazz);
+          }
           fieldList.addAll(fieldCache.get(superclazz));
         } else {
           superclassCache.put(clazz, superclazz);
@@ -327,20 +331,21 @@ public class StorableEngine {
         }
       }
     }
-    
+
     // Find callback methods
     List<AfterReadCallback> callbacks = new ArrayList<>();
     for (Method m : clazz.getDeclaredMethods()) {
-      if (m.isAnnotationPresent(AfterRead.class)) { 
+      if (m.isAnnotationPresent(AfterRead.class)) {
         callbacks.add(new AfterReadCallback(m));
       }
     }
     callbackCache.put(clazz, callbacks);
-    
+
     fieldCache.put(clazz, fieldList);
   }
 
-  public Object instantiate_impl(Registry registry, Type type) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
+  public Object instantiate_impl(Registry registry, Type type)
+      throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     Class<?> clazz = TypeUtil.toClass(type);
     if (!fieldCache.containsKey(clazz)) {
       cacheHandlers(registry, clazz);
@@ -358,7 +363,8 @@ public class StorableEngine {
     throw new IllegalArgumentException("No factory found for " + clazz);
   }
 
-  public static <T> T instantiate(Registry registry, Type type) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
+  public static <T> T instantiate(Registry registry, Type type)
+      throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     return (T) INSTANCE.get().instantiate_impl(registry, type);
   }
 
