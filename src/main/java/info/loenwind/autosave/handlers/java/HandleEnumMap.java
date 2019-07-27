@@ -23,7 +23,7 @@ public class HandleEnumMap<K extends Enum<K>> extends HandleMap<EnumMap<K, ?>>{
   private final Class<K> enumClass;
   private final K[] enumValues;
   
-  public HandleEnumMap() throws NoHandlerFoundException {
+  public HandleEnumMap() {
     super((Class<EnumMap<K, ?>>) (Class) EnumMap.class);
     this.enumClass = (Class<K>) (Class) Enum.class;
     this.enumValues = (K[]) new Enum[0];

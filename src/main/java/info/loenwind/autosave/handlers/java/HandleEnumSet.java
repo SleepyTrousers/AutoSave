@@ -13,7 +13,7 @@ import info.loenwind.autosave.util.TypeUtil;
 @SuppressWarnings("rawtypes")
 public class HandleEnumSet extends HandleCollection<EnumSet> {
   
-  public HandleEnumSet() throws NoHandlerFoundException {
+  public HandleEnumSet() {
     super(EnumSet.class);
   }
 

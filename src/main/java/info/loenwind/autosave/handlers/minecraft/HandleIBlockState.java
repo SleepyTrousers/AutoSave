@@ -9,6 +9,7 @@ import info.loenwind.autosave.Registry;
 import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.util.NBTAction;
+import info.loenwind.autosave.util.VersionProxy;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
@@ -26,8 +27,7 @@ public class HandleIBlockState implements IHandler<IBlockState> {
   @Override
   public boolean store(Registry registry, Set<NBTAction> phase, NBTTagCompound nbt, Type type, String name, IBlockState object)
       throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
-    NBTTagCompound tag = new NBTTagCompound();
-    NBTUtil.writeBlockState(tag, object);
+    NBTTagCompound tag = VersionProxy.WRITE_BLOCKSTATE.get().apply(object);
     nbt.setTag(name, tag);
     return true;
   }
