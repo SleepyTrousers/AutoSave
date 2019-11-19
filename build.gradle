@@ -38,8 +38,7 @@ if (project.hasProperty('mod_appendix')) {
 }
 
 minecraft {
-    mappings channel: 'snapshot', version: '20190614-1.14.2'
-    
+    mappings channel: 'snapshot', version: '20191118-1.14.3'    
     //accessTransformer = file('my_at.cfg')
 
     // default run configurations.
@@ -68,11 +67,11 @@ processResources {
 
 jar {
     manifest {
-        attributes(["Specification-Title": "blur",
+        attributes(["Specification-Title": "autosave",
                     "Specification-Vendor": "tterrag",
-                    "Specification-Version": "25.0", // We are version 1 of the modlauncher specification
+                    "Specification-Version": "28.0",
                     "Implementation-Title": project.name,
-                    "Implementation-Version": "${version}",
+                    "Implementation-Version": "${project.version}",
                     "Implementation-Vendor" :"tterrag",
                     "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
 					"Maven-Artifact":"${project.group}:${project.archivesBaseName}:${project.version}"],)

@@ -21,6 +21,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class MinecraftTests {
 
@@ -56,6 +57,12 @@ public class MinecraftTests {
     CompoundNBT tag = new CompoundNBT();
     Writer.write(tag, before);
     Reader.read(tag, after);
+  }
+  
+  @Test
+  public void testBootstrapSanity() {
+      Assertions.assertNotNull(Items.BEEF);
+      Assertions.assertEquals(Items.BEEF, ForgeRegistries.ITEMS.getValue(new ResourceLocation("beef")));
   }
 
   @Test
