@@ -17,12 +17,12 @@ import info.loenwind.autosave.util.TypeUtil;
 public class HandleSimpleCollection<T extends Collection> extends HandleCollection<T> {
   
   private final @Nonnull Supplier<@NonnullType ? extends T> factory;
-  
-  public HandleSimpleCollection(Class<? extends T> clazz) throws NoHandlerFoundException {
+
+  public HandleSimpleCollection(Class<? extends T> clazz) {
     this(clazz, TypeUtil.defaultConstructorFactory(clazz));
   }
-  
-  public HandleSimpleCollection(Class<? extends T> clazz, Supplier<? extends T> factory) throws NoHandlerFoundException {
+
+  public HandleSimpleCollection(Class<? extends T> clazz, Supplier<? extends T> factory) {
     super(clazz);
     this.factory = factory;
   }

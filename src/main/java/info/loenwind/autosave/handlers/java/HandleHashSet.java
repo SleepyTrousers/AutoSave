@@ -12,8 +12,8 @@ import info.loenwind.autosave.util.TypeUtil;
 
 @SuppressWarnings("rawtypes")
 public class HandleHashSet extends HandleCollection<HashSet> {
-  
-  public HandleHashSet() throws NoHandlerFoundException {
+
+  public HandleHashSet() {
     super(HashSet.class);
   }
 

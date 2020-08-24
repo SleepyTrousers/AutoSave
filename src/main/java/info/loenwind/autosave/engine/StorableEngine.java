@@ -210,8 +210,8 @@ public class StorableEngine {
     Log.livetraceNBT("Saved NBT data for object ", object, " of class ", clazz);
   }
 
-  public static @Nullable <T> T getSingleField(Registry registry, Set<NBTAction> phase, CompoundNBT tag, String fieldName,
-      Type type, @Nullable T object) throws InstantiationException, IllegalAccessException, IllegalArgumentException, NoHandlerFoundException {
+  public static @Nullable <T> T getSingleField(Registry registry, Set<NBTAction> phase, CompoundNBT tag, String fieldName, Type type, @Nullable T object)
+          throws InstantiationException, IllegalAccessException, IllegalArgumentException, NoHandlerFoundException {
     if (!tag.contains(fieldName + NULL_POSTFIX)) {
       for (IHandler<T> handler : registry.findHandlers(type)) {
         T result = handler.read(registry, phase, tag, type, fieldName, object);
@@ -223,8 +223,8 @@ public class StorableEngine {
     return null;
   }
 
-  public static <T> void setSingleField(Registry registry, Set<NBTAction> phase, CompoundNBT tag, String fieldName,
-      Type fieldType, @Nullable T fieldData) throws InstantiationException, IllegalAccessException, IllegalArgumentException, NoHandlerFoundException {
+  public static <T> void setSingleField(Registry registry, Set<NBTAction> phase, CompoundNBT tag, String fieldName, Type fieldType, @Nullable T fieldData)
+          throws InstantiationException, IllegalAccessException, IllegalArgumentException, NoHandlerFoundException {
     if (fieldData != null) {
       tag.remove(fieldName + NULL_POSTFIX);
       for (IHandler<T> handler : registry.findHandlers(fieldType)) {
@@ -309,7 +309,9 @@ public class StorableEngine {
       Storable annotation = superclazz.getAnnotation(Storable.class);
       if (annotation != null) {
         if (annotation.handler() == HandleStorable.class) {
-          cacheHandlers(registry, superclazz);
+          if (!fieldCache.containsKey(superclazz)) {
+            cacheHandlers(registry, superclazz);
+          }
           fieldList.addAll(fieldCache.get(superclazz));
         } else {
           superclassCache.put(clazz, superclazz);
@@ -340,7 +342,8 @@ public class StorableEngine {
     fieldCache.put(clazz, fieldList);
   }
 
-  public Object instantiate_impl(Registry registry, Type type) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
+  public Object instantiate_impl(Registry registry, Type type)
+          throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     Class<?> clazz = TypeUtil.toClass(type);
     if (!fieldCache.containsKey(clazz)) {
       cacheHandlers(registry, clazz);
@@ -358,7 +361,8 @@ public class StorableEngine {
     throw new IllegalArgumentException("No factory found for " + clazz);
   }
 
-  public static <T> T instantiate(Registry registry, Type type) throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
+  public static <T> T instantiate(Registry registry, Type type)
+          throws IllegalArgumentException, IllegalAccessException, InstantiationException, NoHandlerFoundException {
     return (T) INSTANCE.get().instantiate_impl(registry, type);
   }
 

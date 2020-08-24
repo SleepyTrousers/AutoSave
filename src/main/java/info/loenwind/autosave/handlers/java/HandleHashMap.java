@@ -12,8 +12,8 @@ import info.loenwind.autosave.util.TypeUtil;
 
 @SuppressWarnings("rawtypes")
 public class HandleHashMap extends HandleMap<HashMap> {
-  
-  public HandleHashMap() throws NoHandlerFoundException {
+
+  public HandleHashMap() {
     super(HashMap.class);
   }
 

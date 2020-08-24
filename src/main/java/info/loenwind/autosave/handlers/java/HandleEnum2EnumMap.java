@@ -35,8 +35,8 @@ public class HandleEnum2EnumMap<T extends Enum<T>> extends HandleMap<EnumMap<T, 
   
   private final Enum[] vals;
   private final int valspace;
-  
-  public HandleEnum2EnumMap() throws NoHandlerFoundException {
+
+  public HandleEnum2EnumMap() {
     super((Class<EnumMap<T, Enum>>) (Class) EnumMap.class);
     this.keyClass = (Class<T>) (Class) Enum.class;
     this.keys = (T[]) new Enum[0];

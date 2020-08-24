@@ -12,9 +12,9 @@ import info.loenwind.autosave.util.TypeUtil;
 
 @SuppressWarnings("rawtypes")
 public class HandleArrayList extends HandleCollection<ArrayList> {
-  
-  public HandleArrayList() throws NoHandlerFoundException {
-    this(Registry.GLOBAL_REGISTRY, new Type[0]);
+
+  public HandleArrayList() {
+    super(ArrayList.class);
   }
 
   protected HandleArrayList(Registry registry, Type... types) throws NoHandlerFoundException {
