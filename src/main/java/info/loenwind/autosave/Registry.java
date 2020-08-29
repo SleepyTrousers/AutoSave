@@ -12,7 +12,6 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.ArrayUtils;
 
 import info.loenwind.autosave.annotations.Storable;
-import info.loenwind.autosave.exceptions.NoHandlerFoundException;
 import info.loenwind.autosave.handlers.IHandler;
 import info.loenwind.autosave.handlers.forge.HandleFluidStack;
 import info.loenwind.autosave.handlers.forge.HandleRegistryEntry;
@@ -176,22 +175,20 @@ public class Registry {
     
     // Fallback array handler
     GLOBAL_REGISTRY.register(new HandleArrays());
-    
-    // Collections
-    try {
-      // List/ArrayList
-      GLOBAL_REGISTRY.register(new HandleArrayList());
-      // LinkedList
-      GLOBAL_REGISTRY.register(new HandleSimpleCollection<>(LinkedList.class));
-      
-      // Set/HashSet
-      GLOBAL_REGISTRY.register(new HandleHashSet());
-      GLOBAL_REGISTRY.register(new HandleEnumSet());
 
-      GLOBAL_REGISTRY.register(new HandleHashMap());
-      GLOBAL_REGISTRY.register(new HandleEnum2EnumMap<>()); // This MUST be before HandleEnumMap as it is a special case
-      GLOBAL_REGISTRY.register(new HandleEnumMap<>());
-    } catch (NoHandlerFoundException e) {}
+    // Collections
+    // List/ArrayList
+    GLOBAL_REGISTRY.register(new HandleArrayList());
+    // LinkedList
+    GLOBAL_REGISTRY.register(new HandleSimpleCollection<>(LinkedList.class));
+
+    // Set/HashSet
+    GLOBAL_REGISTRY.register(new HandleHashSet());
+    GLOBAL_REGISTRY.register(new HandleEnumSet());
+
+    GLOBAL_REGISTRY.register(new HandleHashMap());
+    GLOBAL_REGISTRY.register(new HandleEnum2EnumMap<>()); // This MUST be before HandleEnumMap as it is a special case
+    GLOBAL_REGISTRY.register(new HandleEnumMap<>());
 
     // Minecraft basic types
     GLOBAL_REGISTRY.register(new HandleRegistryEntry());
@@ -311,8 +308,8 @@ public class Registry {
 
   /**
    * Helper method for {@link #findHandlers(Type)}. Looks up only registered handlers and adds them to the end of the given list.
-   * 
-   * @param clazz
+   * @param caller
+   * @param type
    * @param result
    */
   private void findRegisteredHandlers(Registry caller, Type type, List<IHandler> result) {

@@ -10,7 +10,7 @@ Automatically save, load, and sync NBT data with a easy to use, easy to extend, 
 First add tterrag's alternate maven to your buildscript
 ```groovy
 repositories {
-    maven { url = "http://maven2.tterrag.com" } // AutoSave
+    maven { url = "https://maven.tterrag.com" } // AutoSave
 }
 ```
 

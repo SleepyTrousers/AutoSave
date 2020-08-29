@@ -27,14 +27,14 @@ public abstract class HandleGenericType<T> implements IHandler<T> {
   protected final List<IHandler>[] subHandlers;
 
   @SuppressWarnings("unchecked")
-  protected HandleGenericType(Class<? extends T> clazz, Registry registry, Type... parameterTypes) throws NoHandlerFoundException {
+  protected HandleGenericType(Class<? extends T> clazz) {
     this.clazz = clazz;
     this.types = new Type[getRequiredParameters()];
     this.subHandlers = (List<IHandler>[]) new List[getRequiredParameters()];
+  }
 
-    if (parameterTypes.length == 0) {
-      return;
-    }
+  protected HandleGenericType(Class<? extends T> clazz, Registry registry, Type... parameterTypes) throws NoHandlerFoundException {
+    this(clazz);
     if (parameterTypes.length != getRequiredParameters()) {
       throw new IllegalArgumentException("Mismatch of parameter count. Required: " + getRequiredParameters() + "  Found: " + parameterTypes.length);
     }
@@ -51,7 +51,7 @@ public abstract class HandleGenericType<T> implements IHandler<T> {
           throw new NoHandlerFoundException(type, "Unknown");
         }
         subHandlers[i] = handlers;
-      } catch (IllegalAccessException | InstantiationException e) {
+      } catch (IllegalAccessException | InstantiationException | NoHandlerFoundException e) {
         throw new NoHandlerFoundException(type, "Unknown", e);
       }
     }

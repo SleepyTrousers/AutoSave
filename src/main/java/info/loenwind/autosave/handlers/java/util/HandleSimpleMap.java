@@ -16,12 +16,12 @@ import info.loenwind.autosave.util.TypeUtil;
 public class HandleSimpleMap<T extends Map> extends HandleMap<T> {
   
   private final @Nonnull Supplier<@NonnullType ? extends T> factory;
-  
-  public HandleSimpleMap(Class<? extends T> clazz) throws NoHandlerFoundException {
+
+  public HandleSimpleMap(Class<? extends T> clazz) {
     this(clazz, TypeUtil.defaultConstructorFactory(clazz));
   }
-  
-  public HandleSimpleMap(Class<? extends T> clazz, Supplier<? extends T> factory) throws NoHandlerFoundException {
+
+  public HandleSimpleMap(Class<? extends T> clazz, Supplier<? extends T> factory) {
     super(clazz);
     this.factory = factory;
   }
