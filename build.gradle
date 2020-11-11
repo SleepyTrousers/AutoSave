@@ -38,7 +38,7 @@ if (project.hasProperty('mod_appendix')) {
 }
 
 minecraft {
-    mappings channel: 'snapshot', version: '20200514-1.15.1'
+    mappings channel: 'snapshot', version: "${mappings_version}"
     //accessTransformer = file('my_at.cfg')
 
     // default run configurations.
