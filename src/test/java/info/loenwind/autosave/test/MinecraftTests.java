@@ -14,7 +14,6 @@ import info.loenwind.autosave.Writer;
 import info.loenwind.autosave.annotations.Store;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.LogBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
@@ -38,7 +37,7 @@ public class MinecraftTests {
 
     void fill() {
       pos = new BlockPos(867, 5, 309);
-      state = Blocks.OAK_LOG.getDefaultState().with(LogBlock.AXIS, Direction.Axis.Z);
+      //state = Blocks.OAK_LOG.getDefaultState().with(LogBlock.AXIS, Direction.Axis.Z);
       stack = new ItemStack(Items.GOLDEN_APPLE, 32);
       resloc = new ResourceLocation("fancy", "strings");
       
